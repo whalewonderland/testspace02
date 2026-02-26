@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Master - Stylish Edition</title>
+    <style>
+        :root { 
+            --bg: #0b0e14; 
+            --card: #161b22; 
+            --header-bg: rgba(11, 14, 20, 0.9);
+            --accent: #0ea5e9; 
+            --success: #10b981; 
+            --text: #e6edf3; 
+            --note: #8b949e; 
+            --daily: #38bdf8; 
+            --hazama: #fbbf24; 
+            --full: #f43f5e; 
+            --long: #a855f7; 
+            --none: #484f58; 
+            --danger: #f85149; 
+            --gold: #d29922;
+            --border: #30363d;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 0; margin: 0; 
+            line-height: 1.5;
+        }
+
+        .container { max-width: 600px; margin: auto; padding: 0 12px; }
+ 
+        /* 固定ヘッダー - ガラスのような質感 */
+        .fixed-header { 
+            position: sticky; top: 0; z-index: 1100; 
+            background: var(--header-bg); 
+            backdrop-filter: blur(8px);
+            padding-top: 10px; 
+            border-bottom: 1px solid var(--border); 
+        }
+        
+        /* スロット切り替え - よりモダンなボタン */
+        .slot-bar { display: flex; gap: 6px; margin-bottom: 12px; }
+        .slot-btn { 
+            flex: 1; padding: 10px 4px; font-size: 11px; font-weight: 600;
+            background: transparent; color: var(--note); 
+            border: 1px solid var(--border); border-radius: 6px; 
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .slot-btn.active { 
+            background: rgba(14, 165, 233, 0.15); 
+            color: var(--accent); 
+            border-color: var(--accent); 
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+        }
+
+        .top-status-bar { 
+            background: var(--card); 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px 18px; border-radius: 12px; margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+        .header-left { display: flex; flex-direction: column; gap: 2px; }
+        .info-date { font-weight: 800; color: #fff; font-size: 1rem; letter-spacing: 0.5px; }
+        .info-reset { font-size: 0.75rem; color: var(--note); text-transform: uppercase; }
+        .pts-badge { 
+            background: #000; color: var(--accent); border: 1.5px solid var(--accent); 
+            padding: 6px 16px; border-radius: 30px; font-weight: 800; font-size: 1.1rem;
+            box-shadow: inset 0 0 10px rgba(14, 165, 233, 0.2);
+        }
+        .pts-badge.reached { 
+            background: var(--success); color: #000; border-color: #fff;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+ 
+        /* 追加フォーム */
+        .add-form { 
+            background: var(--card); padding: 12px; border-radius: 12px; 
+            display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; 
+            border: 1px solid var(--border);
+        }
+        .input-row { display: flex; gap: 8px; align-items: center; }
+        select, input { 
+            padding: 10px; border-radius: 8px; border: 1px solid var(--border); 
+            font-size: 13px; background: #0d1117; color: #fff;
+            outline: none; transition: border-color 0.2s;
+        }
+        select:focus, input:focus { border-color: var(--accent); }
+        .add-btn { 
+            background: var(--accent); color: #fff; border: none; 
+            padding: 10px; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; flex: 1; transition: opacity 0.2s;
+        }
+        .add-btn:active { opacity: 0.8; }
+       
+        .csv-actions { display: flex; gap: 6px; }
+        .csv-btn { 
+            background: #21262d; color: var(--text); border: 1px solid var(--border); 
+            padding: 6px; border-radius: 6px; font-size: 10px; flex: 1; cursor: pointer; 
+        }
+        .csv-btn:hover { background: #30363d; }
+ 
+        /* メインリスト */
+        #mainContent { position: relative; padding-top: 10px; transition: filter 0.3s; }
+        .locked { opacity: 0.15; pointer-events: none; filter: blur(6px); }
+        .reward-alert-section { 
+            background: linear-gradient(90deg, #d29922, #f1c40f); color: #000; 
+            padding: 10px; border-radius: 10px; margin-bottom: 15px; 
+            text-align: center; font-weight: 800; font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(210, 153, 34, 0.3);
+        }
+ 
+        .cat-section { margin-top: 15px; }
+        .cat-header { 
+            font-size: 0.8rem; font-weight: 700; padding: 12px; border-radius: 8px; 
+            margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .cat-section.closed .task-list { display: none; }
+       
+        .cat-daily { background: rgba(56, 189, 248, 0.15); color: var(--daily); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .cat-reward { background: rgba(210, 153, 34, 0.15); color: var(--gold); border: 1px solid rgba(210, 153, 34, 0.3); }
+        .cat-hazama { background: rgba(251, 191, 36, 0.15); color: var(--hazama); border: 1px solid rgba(251, 191, 36, 0.3); }
+        .cat-full { background: rgba(244, 63, 94, 0.15); color: var(--full); border: 1px solid rgba(244, 63, 94, 0.3); }
+        .cat-long { background: rgba(168, 85, 247, 0.15); color: var(--long); border: 1px solid rgba(168, 85, 247, 0.3); }
+        .cat-none { background: rgba(72, 79, 88, 0.15); color: var(--note); border: 1px solid rgba(72, 79, 88, 0.3); }
+ 
+        .task-item { 
+            display: flex; align-items: center; background: var(--card); 
+            padding: 12px; margin-bottom: 8px; border-radius: 10px; 
+            border: 1px solid var(--border); transition: transform 0.1s;
+        }
+        .task-item.checked { opacity: 0.3; filter: grayscale(0.8); }
+        
+        /* カスタムチェックボックス風 */
+        input[type="checkbox"] { 
+            width: 22px; height: 22px; margin-right: 12px; 
+            accent-color: var(--accent); cursor: pointer;
+        }
+
+        .task-info { flex: 1; }
+        .task-name { font-weight: 600; font-size: 0.9rem; color: #fff; }
+        .task-note { 
+            font-size: 0.75rem; color: var(--note); 
+            margin-top: 2px; cursor: pointer; transition: color 0.2s;
+        }
+        .task-note:hover { color: var(--accent); }
+        .today-alert { background: var(--danger); color: white; padding: 1px 4px; border-radius: 4px; font-weight: bold; }
+ 
+        .tool-box { display: flex; gap: 4px; margin-left: 8px; }
+        .tool-btn { 
+            background: #21262d; color: var(--note); border: 1px solid var(--border); 
+            border-radius: 6px; padding: 4px 8px; font-size: 10px; cursor: pointer; 
+        }
+        .tool-btn:hover { color: #fff; border-color: var(--note); }
+        .del-btn:hover { color: #fff; background: var(--danger); border-color: var(--danger); }
+
+        .btn-reset { 
+            width: 100%; padding: 14px; background: transparent; 
+            color: var(--danger); border: 1px solid var(--danger); 
+            border-radius: 12px; margin: 30px 0; font-weight: bold; 
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-reset:hover { background: var(--danger); color: #fff; }
+       
+        #csvFile { display: none; }
+    </style>
+</head>
+<body>
+ 
+<div class="container">
+    <div class="fixed-header">
+        <div class="slot-bar">
+            <button class="slot-btn" onclick="switchSlot(1)" id="slotBtn1">Keep1</button>
+            <button class="slot-btn" onclick="switchSlot(2)" id="slotBtn2">Keep2</button>
+            <button class="slot-btn" onclick="switchSlot(3)" id="slotBtn3">Keep3</button>
+            <button class="slot-btn" onclick="switchSlot(4)" id="slotBtn4">Keep4</button>
+            <button class="slot-btn" onclick="switchSlot(5)" id="slotBtn5">Keep5</button>
+        </div>
+
+        <div class="top-status-bar">
+            <div class="header-left">
+                <span class="info-date" id="dateDisplay">---</span>
+                <span class="info-reset" id="resetDisplay">---</span>
+            </div>
+            <div class="header-right"><div id="ptsBadge" class="pts-badge">0</div></div>
+        </div>
+ 
+        <div class="add-form">
+            <div class="input-row">
+                <select id="daySelector" onchange="checkLock()" style="flex:2; background: #0d1117; color: var(--accent); border: 1px solid var(--border);">
+                    <option value="">-- UNLOCK BY SELECTING DAY --</option>
+                    <option value="mon">MONDAY (泡更新)</option>
+                    <option value="wed">WEDNESDAY (泡更新)</option>
+                    <option value="fri">FRIDAY (泡更新)</option>
+                    <option value="other">OTHER DAYS</option>
+                </select>
+            </div>
+            <div class="input-row">
+                <input type="text" id="newName" style="flex:2" placeholder="Task Name">
+                <input type="number" id="newPts" style="flex:0.5" placeholder="pt">
+                <button class="add-btn" onclick="addNewTask()">ADD</button>
+            </div>
+            <div class="input-row">
+                <select id="newCat" style="flex:1">
+                    <option value="hazama">狭間</option><option value="full">フル</option><option value="long">長期</option><option value="daily" selected>デイリー</option><option value="none">待機</option>
+                </select>
+                <div class="csv-actions" style="flex:1">
+                    <button class="csv-btn" onclick="exportCSV()">EXPORT</button>
+                    <button class="csv-btn" onclick="document.getElementById('csvFile').click()">IMPORT</button>
+                    <input type="file" id="csvFile" accept=".csv" onchange="importCSV(this)">
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <div id="mainContent" class="locked">
+        <div id="rewardAlert" class="reward-alert-section" style="display: none;">REWARD AVAILABLE NOW!</div>
+        <div id="categoryContainers"></div>
+        <button class="btn-reset" onclick="resetAll()">RESET ALL ACTIVITIES</button>
+    </div>
+</div>
+ 
+<script>
+    // JavaScriptの内容は前回のロジックを維持しつつ、UIへの反映のみ微調整
+    const catNames = { reward: "🎁 REWARD", daily: "DAILY ACTIVITY", hazama: "HAZAMA EVENT", full: "FULL EVENT", long: "LONG-TERM", none: "STANDBY" };
+    
+    const defaultActivities = [
+        { name: "資源の採取", pts: 5, note: "リセット前から", cat: "daily", checked: false },
+        { name: "レンジャー騎士団", pts: 3, note: "盗まれないように", cat: "daily", checked: false },
+        { name: "美人に挨拶", pts: 10, note: "5回以上！", cat: "daily", checked: false },
+        { name: "美人と交流", pts: 0, note: "忘れずに！", cat: "daily", checked: false },
+        { name: "遺跡の探検２回", pts: 10, note: "未占領を確認", cat: "daily", checked: false },
+        { name: "パトロール", pts: 3, note: "1枚目全部", cat: "daily", checked: false },
+        { name: "同盟ショップ", pts: 0, note: "忘れずに", cat: "daily", checked: false },
+        { name: "ゴールドの徴税", pts: 5, note: "王城", cat: "daily", checked: false },
+        { name: "ドラゴンに餌", pts: 3, note: "素材合成", cat: "daily", checked: false },
+        { name: "資源の収穫", pts: 3, note: "受取れば到達", cat: "daily", checked: false },
+        { name: "資源の徴収", pts: 5, note: "35回", cat: "daily", checked: false },
+        { name: "祭祀", pts: 9, note: "20回", cat: "daily", checked: false },
+        { name: "兵士の訓練", pts: 15, note: "500名", cat: "daily", checked: false },
+        { name: "兵士の回復", pts: 6, note: "150名", cat: "daily", checked: false },
+        { name: "罠の作成", pts: 6, note: "500個", cat: "daily", checked: false },
+        { name: "モンスターの討伐", pts: 15, note: "5回", cat: "daily", checked: false },
+        { name: "おたすけ", pts: 5, note: "5回", cat: "daily", checked: false },
+        { name: "同盟の寄付", pts: 10, note: "10回", cat: "daily", checked: false },
+        { name: "スタミナ", pts: 9, note: "180消費", cat: "daily", checked: false },
+        { name: "闇市", pts: 12, note: "3回", cat: "daily", checked: false },
+        { name: "ラッキールーレット", pts: 3, note: "1回", cat: "daily", checked: false },
+        { name: "装備の強化", pts: 0, note: "150回", cat: "daily", checked: false },
+        { name: "将軍の強化", pts: 15, note: "5回強化", cat: "daily", checked: false },
+        { name: "敵兵の撃退", pts: 15, note: "", cat: "daily", checked: false },
+        { name: "PvPバトル", pts: 9, note: "", cat: "daily", checked: false },
+        { name: "研究", pts: 8, note: "1回でよい", cat: "daily", checked: false },
+        { name: "強制労働", pts: 3, note: "1回でよい", cat: "daily", checked: false },
+        { name: "リワード120", pts: 0, note: "120pt満額", cat: "daily", checked: false },
+        { name: "リワード145", pts: 0, note: "145pt満額", cat: "daily", checked: false }
+    ];
+
+    let currentSlot = localStorage.getItem('currentSlot') || 1;
+    let catStatus, activities;
+
+    function loadSlotData(slot) {
+        const savedActivities = localStorage.getItem(`activities_slot${slot}`);
+        const savedStatus = localStorage.getItem(`catStatus_slot${slot}`);
+        activities = savedActivities ? JSON.parse(savedActivities) : JSON.parse(JSON.stringify(defaultActivities));
+        catStatus = savedStatus ? JSON.parse(savedStatus) : { reward: true, daily: true, hazama: false, full: false, long: false, none: false };
+    }
+
+    function switchSlot(slotNum) {
+        saveData();
+        currentSlot = slotNum;
+        localStorage.setItem('currentSlot', currentSlot);
+        loadSlotData(currentSlot);
+        updateSlotUI();
+        renderList();
+        checkLock();
+    }
+
+    function updateSlotUI() {
+        for (let i = 1; i <= 5; i++) {
+            const btn = document.getElementById(`slotBtn${i}`);
+            if (i == currentSlot) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+    }
+ 
+    function saveData() {
+        localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities));
+        localStorage.setItem(`catStatus_slot${currentSlot}`, JSON.stringify(catStatus));
+    }
+ 
+    function updateHeader() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const dateStr = now.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' });
+        document.getElementById('dateDisplay').innerText = dateStr;
+        const dstStart = getNthSunday(year, 2, 2); dstStart.setDate(dstStart.getDate() + 1);
+        const dstEnd = getNthSunday(year, 10, 1); dstEnd.setDate(dstEnd.getDate() + 1);
+        const isSummer = now >= dstStart && now < dstEnd;
+        document.getElementById('resetDisplay').innerText = `NEXT RESET: ${isSummer ? '16:00' : '17:00'}`;
+        return `${now.getMonth() + 1}/${now.getDate()}`;
+    }
+    function getNthSunday(y, m, n) { let d = new Date(y, m, 1); let c = 0; while (c < n) { if (d.getDay() === 0) c++; if (c < n) d.setDate(d.getDate() + 1); } return d; }
+    const todayMD = updateHeader();
+ 
+    function renderList() {
+        const container = document.getElementById('categoryContainers');
+        container.innerHTML = "";
+        let currentTotal = calculateTotal();
+        let rewardPending = false;
+ 
+        Object.keys(catNames).forEach(catKey => {
+            const catTasks = activities.filter(t => {
+                const match = t.note ? t.note.match(/(\d+)pt満額/) : null;
+                const isReady = match && currentTotal >= parseInt(match[1]);
+                if (catKey === 'reward') return isReady && !t.checked;
+                if (t.cat === catKey) return !(isReady && !t.checked);
+                return false;
+            });
+            if (catTasks.length === 0 && (catKey !== 'daily' && catKey !== 'reward' && catKey !== 'none')) return;
+            if (catKey === 'reward' && catTasks.length === 0) return;
+            if (catKey === 'reward') rewardPending = true;
+ 
+            const section = document.createElement('div');
+            section.className = `cat-section ${catStatus[catKey] ? '' : 'closed'}`;
+            section.innerHTML = `<div class="cat-header cat-${catKey}" onclick="toggleCategory('${catKey}')"><span>${catNames[catKey]}</span><span>${catTasks.filter(t=>t.checked).length}/${catTasks.length}</span></div><div class="task-list"></div>`;
+            const listDiv = section.querySelector('.task-list');
+            catTasks.forEach(task => {
+                const idx = activities.indexOf(task);
+                const div = document.createElement('div');
+                div.className = `task-item ${task.checked ? 'checked' : ''}`;
+                div.innerHTML = `<input type="checkbox" onchange="toggleTask(${idx})" ${task.checked ? 'checked' : ''}><div class="task-info"><div class="task-name">${task.name} <span style="font-size:0.7rem; color:var(--accent)">+${task.pts}pt</span></div><div class="task-note ${task.note && task.note.includes(todayMD) ? 'today-alert' : ''}" onclick="editNote(${idx})">${task.note || 'Edit note...'}</div></div><div class="tool-box"><button class="tool-btn" onclick="moveTask(${idx},-1)">▲</button><button class="tool-btn" onclick="moveTask(${idx},1)">▼</button><button class="tool-btn" onclick="changeCategory(${idx})">🔄</button>${task.cat==='none'?'<button class="tool-btn del-btn" onclick="deleteTask('+idx+')">🗑️</button>':''}</div>`;
+                listDiv.appendChild(div);
+            });
+            container.appendChild(section);
+        });
+        document.getElementById('rewardAlert').style.display = rewardPending ? 'block' : 'none';
+        updateScore(currentTotal);
+        saveData();
+    }
+ 
+    function calculateTotal() { let t = 0; activities.forEach(a => { if (a.checked && a.cat === 'daily') t += a.pts; }); return t; }
+    function updateScore(t) { const b = document.getElementById('ptsBadge'); b.innerText = t; if (t >= 145) b.classList.add('reached'); else b.classList.remove('reached'); }
+    function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
+    function toggleCategory(k) { catStatus[k] = !catStatus[k]; renderList(); }
+    function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value !== "" ? "" : "locked"; }
+    function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
+    function changeCategory(i) { const k = Object.keys(catNames); activities[i].cat = k[(k.indexOf(activities[i].cat) + 1) % k.length]; if(activities[i].cat==='reward') activities[i].cat='daily'; renderList(); }
+    function moveTask(idx, dir) { const target = idx + dir; if (target >= 0 && target < activities.length && activities[idx].cat === activities[target].cat) { [activities[idx], activities[target]] = [activities[target], activities[idx]]; renderList(); } }
+    function addNewTask() { const n = document.getElementById('newName').value; const p = parseInt(document.getElementById('newPts').value) || 0; const c = document.getElementById('newCat').value; if(n){ activities.unshift({name:n,pts:p,cat:c,checked:false,note:""}); catStatus[c]=true; document.getElementById('newName').value=""; document.getElementById('newPts').value=""; renderList(); } }
+    function deleteTask(idx) { if(confirm("Delete this task?")) { activities.splice(idx,1); renderList(); } }
+    function resetAll() { if(confirm("Reset all activities for Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); document.getElementById('daySelector').value = ""; checkLock(); renderList(); } }
+ 
+    function exportCSV() {
+        let csv = "\uFEFFカテゴリーキー,項目名,ポイント,備考\n";
+        activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Keep${currentSlot}_tasks.csv`;
+        link.click();
+    }
+ 
+    function importCSV(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const lines = e.target.result.split("\n");
+            const newActivities = [];
+            for(let i=1; i<lines.length; i++) {
+                const cols = lines[i].split(",");
+                if(cols.length >= 3) {
+                    newActivities.push({ cat: cols[0].trim(), name: cols[1].trim(), pts: parseInt(cols[2]) || 0, note: cols[3] ? cols[3].trim() : "", checked: false });
+                }
+            }
+            if(newActivities.length > 0) {
+                if(confirm("Import " + newActivities.length + " items to Keep" + currentSlot + "? Current list will be overwritten.")) {
+                    activities = newActivities;
+                    renderList();
+                }
+            }
+        };
+        reader.readAsText(file);
+    }
+ 
+    loadSlotData(currentSlot);
+    updateSlotUI();
+    renderList();
+</script>
+</body>
+</html>
