@@ -43,12 +43,13 @@
         }
         
         /* スロット切り替え (Keep1-5) */
-        .slot-bar { display: flex; gap: 6px; margin-bottom: 12px; }
+        .slot-bar { display: flex; gap: 6px; margin-bottom: 4px; }
         .slot-btn { 
-            flex: 1; padding: 10px 4px; font-size: 11px; font-weight: 600;
+            flex: 1; padding: 10px 4px; font-size: 10px; font-weight: 600;
             background: transparent; color: var(--note); 
             border: 1px solid var(--border); border-radius: 6px; 
             cursor: pointer; transition: all 0.3s; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .slot-btn.active { 
             background: rgba(14, 165, 233, 0.15); 
@@ -56,6 +57,7 @@
             border-color: var(--accent); 
             box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
         }
+        .rename-hint { font-size: 8px; color: var(--none); text-align: center; margin-bottom: 8px; }
 
         .top-status-bar { 
             background: var(--card); 
@@ -155,12 +157,13 @@
 <div class="container">
     <div class="fixed-header">
         <div class="slot-bar">
-            <button class="slot-btn" onclick="switchSlot(1)" id="slotBtn1">Keep1</button>
-            <button class="slot-btn" onclick="switchSlot(2)" id="slotBtn2">Keep2</button>
-            <button class="slot-btn" onclick="switchSlot(3)" id="slotBtn3">Keep3</button>
-            <button class="slot-btn" onclick="switchSlot(4)" id="slotBtn4">Keep4</button>
-            <button class="slot-btn" onclick="switchSlot(5)" id="slotBtn5">Keep5</button>
+            <button class="slot-btn" onclick="switchSlot(1)" ondblclick="renameSlot(1)" id="slotBtn1">Keep1</button>
+            <button class="slot-btn" onclick="switchSlot(2)" ondblclick="renameSlot(2)" id="slotBtn2">Keep2</button>
+            <button class="slot-btn" onclick="switchSlot(3)" ondblclick="renameSlot(3)" id="slotBtn3">Keep3</button>
+            <button class="slot-btn" onclick="switchSlot(4)" ondblclick="renameSlot(4)" id="slotBtn4">Keep4</button>
+            <button class="slot-btn" onclick="switchSlot(5)" ondblclick="renameSlot(5)" id="slotBtn5">Keep5</button>
         </div>
+        <div class="rename-hint">※各ボタンをダブルクリックで名前変更</div>
 
         <div class="top-status-bar">
             <div class="header-left">
@@ -243,6 +246,7 @@
 
     let currentSlot = localStorage.getItem('currentSlot') || 1;
     let catStatus, activities;
+    let slotNames = JSON.parse(localStorage.getItem('slotNames')) || ["Keep1", "Keep2", "Keep3", "Keep4", "Keep5"];
 
     function loadSlotData(slot) {
         const savedActivities = localStorage.getItem(`activities_slot${slot}`);
@@ -261,9 +265,20 @@
         checkLock();
     }
 
+    function renameSlot(slotNum) {
+        const currentName = slotNames[slotNum - 1];
+        const newName = prompt("名前を変更:", currentName);
+        if (newName && newName.trim() !== "") {
+            slotNames[slotNum - 1] = newName.trim().substring(0, 10);
+            localStorage.setItem('slotNames', JSON.stringify(slotNames));
+            updateSlotUI();
+        }
+    }
+
     function updateSlotUI() {
         for (let i = 1; i <= 5; i++) {
             const btn = document.getElementById(`slotBtn${i}`);
+            btn.innerText = slotNames[i-1];
             if (i == currentSlot) btn.classList.add('active');
             else btn.classList.remove('active');
         }
@@ -275,7 +290,7 @@
     }
 
     function syncAllSlots() {
-        if (confirm("現在のリストをKeep1〜5すべてに同期しますか？（上書きされます）")) {
+        if (confirm("現在のリストをすべてのKeepに同期しますか？（上書きされます）")) {
             saveData();
             for (let i = 1; i <= 5; i++) {
                 localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities));
@@ -345,7 +360,7 @@
     function moveTask(idx, dir) { const target = idx + dir; if (target >= 0 && target < activities.length && activities[idx].cat === activities[target].cat) { [activities[idx], activities[target]] = [activities[target], activities[idx]]; renderList(); } }
     function addNewTask() { const n = document.getElementById('newName').value; const p = parseInt(document.getElementById('newPts').value) || 0; const c = document.getElementById('newCat').value; if(n){ activities.unshift({name:n,pts:p,cat:c,checked:false,note:""}); catStatus[c]=true; document.getElementById('newName').value=""; document.getElementById('newPts').value=""; renderList(); } }
     function deleteTask(idx) { if(confirm("Delete?")) { activities.splice(idx,1); renderList(); } }
-    function resetAll() { if(confirm("Reset Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); document.getElementById('daySelector').value = ""; checkLock(); renderList(); } }
+    function resetAll() { if(confirm("Reset data?")) { activities.forEach(a => a.checked = false); document.getElementById('daySelector').value = ""; checkLock(); renderList(); } }
  
     function exportCSV() {
         let csv = "\uFEFFカテゴリーキー,項目名,ポイント,備考\n";
@@ -353,7 +368,7 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Keep${currentSlot}_tasks.csv`;
+        link.download = `${slotNames[currentSlot-1]}_tasks.csv`;
         link.click();
     }
  
@@ -370,7 +385,7 @@
                 }
             }
             if(newActivities.length > 0) {
-                if(confirm("Import to Keep" + currentSlot + "?")) {
+                if(confirm("Import data to " + slotNames[currentSlot-1] + "?")) {
                     activities = newActivities;
                     renderList();
                 }
