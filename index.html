@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Auto-Height Edition</title>
+    <title>Game Master - High-Response Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -19,14 +19,18 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--text); padding: 0; margin: 0; 
-            line-height: 1.3; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
+            line-height: 1.3; overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent;
+            user-select: none; /* テキスト選択によるフリーズを防止 */
+            -webkit-user-select: none;
+            touch-action: manipulation; /* ダブルタップズームを禁止して反応を速くする */
         }
 
         .container { max-width: 600px; margin: auto; padding: 0 8px; padding-bottom: 80px; }
         .fixed-header { position: sticky; top: 0; z-index: 1100; background: var(--header-bg); backdrop-filter: blur(10px); padding-top: 8px; border-bottom: 1px solid var(--border); }
         
         .slot-bar { display: flex; gap: 3px; margin-bottom: 4px; }
-        .slot-btn { flex: 1; padding: 8px 1px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; }
+        .slot-btn { flex: 1; padding: 8px 1px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
         .slot-btn.active { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); }
 
         .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border); }
@@ -45,37 +49,43 @@
         
         .cat-daily { border-left: 3px solid var(--daily); color: var(--daily); }
         .cat-hazama { border-left: 3px solid var(--hazama); color: var(--hazama); }
-        .cat-full { border-left: 3px solid var(--full); color: var(--full); }
+        .cat-full { border-left: 4px solid var(--full); color: var(--full); }
         .cat-none { border-left: 3px solid var(--none); color: var(--note); }
 
         .task-item { 
             display: flex; align-items: center; background: var(--card); 
             padding: 6px 8px; margin-bottom: 4px; border-radius: 8px; 
-            border: 1px solid var(--border); min-height: 42px; /* 基本はスリム */
+            border: 1px solid var(--border); min-height: 42px;
         }
         .task-item.checked { opacity: 0.2; filter: grayscale(1); }
         
-        .cat-move-btn { width: 34px; height: 34px; margin-right: 6px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; color: var(--accent); flex-shrink: 0; }
-        input[type="checkbox"] { width: 24px; height: 24px; margin-right: 8px; flex-shrink: 0; }
+        .cat-move-btn { width: 36px; height: 36px; margin-right: 6px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; color: var(--accent); flex-shrink: 0; cursor: pointer; }
+        input[type="checkbox"] { width: 24px; height: 24px; margin-right: 8px; flex-shrink: 0; cursor: pointer; }
         
         .task-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: 2px 0; } 
-        .task-name { font-weight: 700; font-size: 0.85rem; color: #fff; line-height: 1.2; }
+        .task-name { font-weight: 700; font-size: 0.85rem; color: #fff; line-height: 1.2; pointer-events: none; }
         
-        /* 備考欄 - 自動改行・高さ調整 */
         .task-note { 
             font-size: 0.7rem; color: var(--note); margin-top: 3px; 
             background: rgba(255,255,255,0.07); padding: 3px 6px; 
             border-radius: 4px; display: block; 
-            word-wrap: break-word; overflow-wrap: break-word; /* 長い単語も改行 */
-            line-height: 1.4;
+            word-wrap: break-word; overflow-wrap: break-word;
+            line-height: 1.4; pointer-events: auto;
         }
 
-        .order-actions { display: flex; flex-direction: row; gap: 2px; margin-left: 4px; }
-        .order-btn { width: 30px; height: 30px; background: #21262d; border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        /* 移動ボタンの安定化 */
+        .order-actions { display: flex; flex-direction: row; gap: 3px; margin-left: 4px; }
+        .order-btn { 
+            width: 32px; height: 32px; background: #21262d; border: 1px solid var(--border); 
+            color: var(--text); border-radius: 4px; font-size: 11px; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; touch-action: manipulation;
+        }
+        .order-btn:active { background: var(--accent); }
         
-        .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 4px; padding: 6px; font-size: 12px; margin-left: 4px; }
+        .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 4px; padding: 6px; font-size: 12px; margin-left: 4px; cursor: pointer; }
         
-        .btn-reset { width: 100%; padding: 12px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; margin: 20px 0; font-weight: bold; font-size: 12px; }
+        .btn-reset { width: 100%; padding: 12px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; margin: 20px 0; font-weight: bold; font-size: 12px; cursor: pointer; }
         .locked { opacity: 0.15; pointer-events: none; filter: blur(4px); }
         #csvFile { display: none; }
     </style>
@@ -184,8 +194,8 @@
 
     function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
     function changeCat(i) { const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
-    function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
-    function deleteTask(i) { if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
+    function editNote(i) { const n = prompt("Rename note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
+    function deleteTask(i) { if (confirm("Delete this task?")) { activities.splice(i, 1); renderList(); } }
     
     function moveTask(idx, direction) {
         const targetIdx = idx + direction;
@@ -198,14 +208,14 @@
     }
 
     function switchSlot(s) { saveData(); currentSlot = s; updateSlotUI(); loadData(); }
-    function renameSlot(s) { const n = prompt("Rename:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
+    function renameSlot(s) { const n = prompt("New slot name:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
     function updateSlotUI() { document.querySelectorAll('.slot-btn').forEach((b,i)=>{ b.innerText = slotNames[i]; b.classList.toggle('active', i+1==currentSlot); b.ondblclick = () => renameSlot(i+1); }); localStorage.setItem('currentSlot', currentSlot); }
     function saveData() { localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities)); }
-    function syncAllSlots() { if(confirm("Copy this list to ALL Keep?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
+    function syncAllSlots() { if(confirm("Copy this list to ALL 5 slots?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Done."); } }
     function addNewTask() { const n = document.getElementById('newName').value; const p = document.getElementById('newPts').value || 0; if (!n) return; activities.unshift({ name: n, pts: parseInt(p), cat: 'daily', checked: false, note: "" }); document.getElementById('newName').value = ""; document.getElementById('newPts').value = ""; renderList(); }
     function exportCSV() { let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n"; activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${slotNames[currentSlot-1]}_tasks.csv`; link.click(); }
     function importCSV(input) { const file = input.files[0]; const reader = new FileReader(); reader.onload = (e) => { const lines = e.target.result.split("\n"); const news = []; for(let i=1; i<lines.length; i++) { const c = lines[i].split(","); if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false }); } if(news.length > 0) { activities = news; renderList(); } }; reader.readAsText(file); }
-    function resetAll() { if(confirm("Reset checks?")) { activities.forEach(a => a.checked = false); renderList(); } }
+    function resetAll() { if(confirm("Reset all checkboxes?")) { activities.forEach(a => a.checked = false); renderList(); } }
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
 
     window.onload = () => {
