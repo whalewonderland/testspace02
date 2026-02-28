@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Handle Fix Edition</title>
+    <title>Game Master - Button Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -31,6 +31,7 @@
 
         .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
         .pts-badge { background: #000; color: var(--accent); border: 2px solid var(--accent); padding: 4px 12px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; }
+        .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
         .add-form { background: var(--card); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
         .input-row { display: flex; gap: 6px; align-items: center; }
@@ -40,7 +41,7 @@
         .csv-actions { display: flex; gap: 4px; margin-top: 2px; }
         .csv-btn { background: #21262d; color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 10px; flex: 1; cursor: pointer; }
 
-        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 14px; border-radius: 10px; margin: 15px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid transparent; user-select: none; }
+        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 14px; border-radius: 10px; margin: 15px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid transparent; }
         .cat-section.closed .task-list { display: none; }
         
         .cat-daily { border-left: 4px solid var(--daily); color: var(--daily); }
@@ -48,33 +49,22 @@
         .cat-full { border-left: 4px solid var(--full); color: var(--full); }
         .cat-none { border-left: 4px solid var(--none); color: var(--note); }
 
-        .task-item { display: flex; align-items: center; background: var(--card); padding: 8px 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border); min-height: 65px; position: relative; touch-action: pan-y; user-select: none; }
-        .task-item.dragging { opacity: 0.4; background: #2d333b; z-index: 2000; border-color: var(--accent); box-shadow: 0 0 15px rgba(14, 165, 233, 0.3); }
+        .task-item { display: flex; align-items: center; background: var(--card); padding: 8px 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border); min-height: 65px; position: relative; }
+        .task-item.checked { opacity: 0.25; filter: grayscale(1); }
         
-        .cat-move-btn { width: 44px; height: 44px; margin-right: 12px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 20px; color: var(--accent); flex-shrink: 0; cursor: pointer; user-select: none; }
+        /* ボタン類の配置調整 */
+        .cat-move-btn { width: 44px; height: 44px; margin-right: 10px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 18px; color: var(--accent); flex-shrink: 0; cursor: pointer; }
+        input[type="checkbox"] { width: 28px; height: 28px; margin-right: 10px; flex-shrink: 0; cursor: pointer; }
         
-        input[type="checkbox"] { width: 28px; height: 28px; margin-right: 12px; flex-shrink: 0; cursor: pointer; }
-        .task-info { flex: 1; min-width: 0; user-select: none; } 
-        .task-name { font-weight: 700; font-size: 0.95rem; color: #fff; pointer-events: none; }
-        .task-note { 
-            font-size: 0.75rem; color: var(--note); margin-top: 4px; 
-            background: #21262d; padding: 6px 12px; border-radius: 6px; 
-            display: inline-block; border: 1px solid rgba(255,255,255,0.1); 
-            cursor: pointer; user-select: none; pointer-events: auto;
-        }
+        .task-info { flex: 1; min-width: 0; } 
+        .task-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
+        .task-note { font-size: 0.75rem; color: var(--note); margin-top: 4px; background: #21262d; padding: 6px 10px; border-radius: 6px; display: inline-block; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
 
-        /* 移動ハンドル - テキスト選択を完全に禁止 */
-        .drag-handle {
-            width: 50px; height: 55px; margin-left: 4px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; color: var(--note);
-            cursor: grab; flex-shrink: 0;
-            z-index: 100;
-            touch-action: none; /* スクロール防止 */
-            user-select: none; /* テキスト選択防止 */
-            -webkit-user-select: none;
-            background: rgba(255,255,255,0.02);
-        }
+        /* 上下移動ボタンのスタイル */
+        .order-actions { display: flex; flex-direction: column; gap: 4px; margin-left: 8px; }
+        .order-btn { width: 34px; height: 34px; background: #21262d; border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .order-btn:active { background: var(--accent); color: #fff; }
+
         .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; padding: 10px; font-size: 16px; margin-left: 4px; cursor: pointer; }
         
         .btn-reset { width: 100%; padding: 14px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; margin: 30px 0; font-weight: bold; cursor: pointer; }
@@ -154,47 +144,25 @@
             const listDiv = document.createElement('div');
             listDiv.className = 'task-list';
             
-            tasks.forEach(task => {
+            tasks.forEach((task, tIdx) => {
                 if (task.checked && catKey === 'daily') total += (parseInt(task.pts) || 0);
                 const idx = activities.indexOf(task);
                 const item = document.createElement('div');
                 item.className = `task-item ${task.checked ? 'checked' : ''}`;
-                item.dataset.index = idx;
+                
                 item.innerHTML = `
-                    <div class="cat-move-btn" onpointerup="changeCat(${idx})">🔄</div>
-                    <input type="checkbox" onpointerup="toggleTask(${idx})" ${task.checked ? 'checked' : ''}>
+                    <div class="cat-move-btn" onclick="changeCat(${idx})">🔄</div>
+                    <input type="checkbox" onchange="toggleTask(${idx})" ${task.checked ? 'checked' : ''}>
                     <div class="task-info">
                         <div class="task-name">${task.name} <span style="color:var(--accent); font-size:0.7rem;">+${task.pts||0}pt</span></div>
-                        <div class="task-note" onpointerup="editNote(${idx})">${task.note || '+ Note'}</div>
+                        <div class="task-note" onclick="editNote(${idx})">${task.note || '+ Note'}</div>
                     </div>
-                    ${catKey === 'none' ? `<button class="tool-btn" onpointerup="deleteTask(${idx})">🗑️</button>` : ''}
-                    <div class="drag-handle">≡</div>
+                    <div class="order-actions">
+                        <div class="order-btn" onclick="moveTask(${idx}, -1)">▲</div>
+                        <div class="order-btn" onclick="moveTask(${idx}, 1)">▼</div>
+                    </div>
+                    ${catKey === 'none' ? `<button class="tool-btn" onclick="deleteTask(${idx})">🗑️</button>` : ''}
                 `;
-
-                const handle = item.querySelector('.drag-handle');
-                handle.onpointerdown = (e) => {
-                    e.preventDefault(); // これが文字選択を防ぐ最大の鍵
-                    item.classList.add('dragging');
-                    item.setPointerCapture(e.pointerId);
-
-                    handle.onpointermove = (ev) => {
-                        const target = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.task-item');
-                        if (target && target !== item && target.parentNode === listDiv) {
-                            const targetIdx = parseInt(target.dataset.index);
-                            const currentIdx = parseInt(item.dataset.index);
-                            const temp = activities.splice(currentIdx, 1)[0];
-                            activities.splice(targetIdx, 0, temp);
-                            renderList();
-                        }
-                    };
-                };
-                handle.onpointerup = (e) => {
-                    handle.onpointermove = null;
-                    item.releasePointerCapture(e.pointerId);
-                    item.classList.remove('dragging');
-                    saveData();
-                };
-
                 listDiv.appendChild(item);
             });
             section.appendChild(header);
@@ -210,6 +178,21 @@
     function changeCat(i) { const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
     function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
     function deleteTask(i) { if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
+    
+    // 確実に1つずつ順番を入れ替える
+    function moveTask(idx, direction) {
+        const targetIdx = idx + direction;
+        if (targetIdx < 0 || targetIdx >= activities.length) return;
+        
+        // 同じカテゴリー内でのみ移動を許可（ロジックをシンプルにするため）
+        if (activities[idx].cat !== activities[targetIdx].cat) return;
+
+        const temp = activities[idx];
+        activities[idx] = activities[targetIdx];
+        activities[targetIdx] = temp;
+        renderList();
+    }
+
     function switchSlot(s) { saveData(); currentSlot = s; updateSlotUI(); loadData(); }
     function renameSlot(s) { const n = prompt("New Name:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
     function updateSlotUI() { document.querySelectorAll('.slot-btn').forEach((b,i)=>{ b.innerText = slotNames[i]; b.classList.toggle('active', i+1==currentSlot); b.ondblclick = () => renameSlot(i+1); }); localStorage.setItem('currentSlot', currentSlot); }
