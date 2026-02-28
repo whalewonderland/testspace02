@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Pro Handle Edition</title>
+    <title>Game Master - Handle Fix Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -40,7 +40,7 @@
         .csv-actions { display: flex; gap: 4px; margin-top: 2px; }
         .csv-btn { background: #21262d; color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 10px; flex: 1; cursor: pointer; }
 
-        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 14px; border-radius: 10px; margin: 15px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid transparent; }
+        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 14px; border-radius: 10px; margin: 15px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid transparent; user-select: none; }
         .cat-section.closed .task-list { display: none; }
         
         .cat-daily { border-left: 4px solid var(--daily); color: var(--daily); }
@@ -48,28 +48,34 @@
         .cat-full { border-left: 4px solid var(--full); color: var(--full); }
         .cat-none { border-left: 4px solid var(--none); color: var(--note); }
 
-        .task-item { display: flex; align-items: center; background: var(--card); padding: 8px 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border); min-height: 65px; position: relative; touch-action: pan-y; }
+        .task-item { display: flex; align-items: center; background: var(--card); padding: 8px 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border); min-height: 65px; position: relative; touch-action: pan-y; user-select: none; }
         .task-item.dragging { opacity: 0.4; background: #2d333b; z-index: 2000; border-color: var(--accent); box-shadow: 0 0 15px rgba(14, 165, 233, 0.3); }
-        .task-item.checked { opacity: 0.25; filter: grayscale(1); }
         
-        .cat-move-btn { width: 44px; height: 44px; margin-right: 12px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 20px; color: var(--accent); flex-shrink: 0; cursor: pointer; z-index: 10; }
+        .cat-move-btn { width: 44px; height: 44px; margin-right: 12px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 20px; color: var(--accent); flex-shrink: 0; cursor: pointer; user-select: none; }
         
-        input[type="checkbox"] { width: 28px; height: 28px; margin-right: 12px; flex-shrink: 0; cursor: pointer; z-index: 10; }
-        .task-info { flex: 1; min-width: 0; } 
-        .task-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
-        .task-note { font-size: 0.75rem; color: var(--note); margin-top: 4px; background: #21262d; padding: 6px 12px; border-radius: 6px; display: inline-block; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        input[type="checkbox"] { width: 28px; height: 28px; margin-right: 12px; flex-shrink: 0; cursor: pointer; }
+        .task-info { flex: 1; min-width: 0; user-select: none; } 
+        .task-name { font-weight: 700; font-size: 0.95rem; color: #fff; pointer-events: none; }
+        .task-note { 
+            font-size: 0.75rem; color: var(--note); margin-top: 4px; 
+            background: #21262d; padding: 6px 12px; border-radius: 6px; 
+            display: inline-block; border: 1px solid rgba(255,255,255,0.1); 
+            cursor: pointer; user-select: none; pointer-events: auto;
+        }
 
-        /* 移動ハンドル - 反応を強化 */
+        /* 移動ハンドル - テキスト選択を完全に禁止 */
         .drag-handle {
             width: 50px; height: 55px; margin-left: 4px;
             display: flex; align-items: center; justify-content: center;
             font-size: 26px; color: var(--note);
             cursor: grab; flex-shrink: 0;
-            z-index: 100; /* 最前面に */
-            touch-action: none; /* ブラウザのスクロールを完全に防ぐ */
-            background: rgba(255,255,255,0.02); /* タッチしやすく薄い背景 */
+            z-index: 100;
+            touch-action: none; /* スクロール防止 */
+            user-select: none; /* テキスト選択防止 */
+            -webkit-user-select: none;
+            background: rgba(255,255,255,0.02);
         }
-        .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; padding: 10px; font-size: 16px; margin-left: 4px; z-index: 10; }
+        .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; padding: 10px; font-size: 16px; margin-left: 4px; cursor: pointer; }
         
         .btn-reset { width: 100%; padding: 14px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; margin: 30px 0; font-weight: bold; cursor: pointer; }
         .locked { opacity: 0.15; pointer-events: none; filter: blur(6px); }
@@ -165,10 +171,9 @@
                     <div class="drag-handle">≡</div>
                 `;
 
-                // ハンドル部分のドラッグロジックを強化
                 const handle = item.querySelector('.drag-handle');
                 handle.onpointerdown = (e) => {
-                    e.preventDefault();
+                    e.preventDefault(); // これが文字選択を防ぐ最大の鍵
                     item.classList.add('dragging');
                     item.setPointerCapture(e.pointerId);
 
