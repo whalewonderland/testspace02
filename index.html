@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Ultimate Edition</title>
+    <title>Game Master - Stable Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -23,34 +23,28 @@
         }
 
         .container { max-width: 600px; margin: auto; padding: 0 12px; }
- 
         .fixed-header { position: sticky; top: 0; z-index: 1100; background: var(--header-bg); backdrop-filter: blur(8px); padding-top: 10px; border-bottom: 1px solid var(--border); }
         
-        /* Keepスロット */
         .slot-bar { display: flex; gap: 4px; margin-bottom: 4px; }
-        .slot-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; }
+        .slot-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
         .slot-btn.active { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); }
-        .rename-hint { font-size: 8px; color: var(--none); text-align: center; margin-bottom: 6px; }
 
         .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
         .pts-badge { background: #000; color: var(--accent); border: 2px solid var(--accent); padding: 4px 12px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; }
         .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
-        /* 追加・管理フォーム */
         .add-form { background: var(--card); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
         .input-row { display: flex; gap: 6px; align-items: center; }
         select, input { padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; background: #0d1117; color: #fff; outline: none; }
-        .add-btn { background: var(--accent); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .add-btn { background: var(--accent); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; }
        
         .csv-actions { display: flex; gap: 4px; margin-top: 2px; }
         .csv-btn { background: #21262d; color: var(--text); border: 1px solid var(--border); padding: 5px; border-radius: 6px; font-size: 9px; flex: 1; cursor: pointer; }
         .sync-btn { background: rgba(14, 165, 233, 0.15); color: var(--accent); border-color: var(--accent); }
 
-        /* リスト表示 */
         #mainContent { position: relative; padding-top: 5px; }
         .locked { opacity: 0.15; pointer-events: none; filter: blur(6px); }
         .cat-header { font-size: 0.8rem; font-weight: 800; padding: 12px; border-radius: 10px; margin: 12px 0 6px; display: flex; justify-content: space-between; cursor: pointer; }
-        .cat-section.closed .task-list { display: none; }
         
         .cat-daily { background: rgba(56, 189, 248, 0.1); color: var(--daily); }
         .cat-hazama { background: rgba(251, 191, 36, 0.1); color: var(--hazama); }
@@ -58,25 +52,23 @@
         .cat-long { background: rgba(168, 85, 247, 0.1); color: var(--long); }
         .cat-none { background: #1c2128; color: var(--note); }
 
-        /* タスク項目 - ドラッグ & 巨大ボタン対応 */
-        .task-item { display: flex; align-items: center; background: var(--card); padding: 6px 10px; margin-bottom: 6px; border-radius: 12px; border: 1px solid var(--border); min-height: 55px; cursor: grab; touch-action: pan-y; }
-        .task-item.dragging { opacity: 0.3; background: #2d333b; }
+        .task-item { display: flex; align-items: center; background: var(--card); padding: 6px 10px; margin-bottom: 6px; border-radius: 12px; border: 1px solid var(--border); min-height: 60px; touch-action: none; position: relative; }
+        .task-item.dragging { opacity: 0.3; background: #2d333b; transform: scale(0.98); z-index: 10; }
         .task-item.checked { opacity: 0.2; filter: grayscale(1); }
         
-        .cat-move-btn { width: 44px; height: 44px; margin-right: 10px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 18px; color: var(--accent); flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+        .cat-move-btn { width: 44px; height: 44px; margin-right: 10px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 18px; color: var(--accent); flex-shrink: 0; touch-action: auto; }
         
-        input[type="checkbox"] { width: 24px; height: 24px; margin-right: 10px; flex-shrink: 0; accent-color: var(--accent); }
-        .task-info { flex: 1; min-width: 0; }
+        input[type="checkbox"] { width: 26px; height: 26px; margin-right: 12px; flex-shrink: 0; accent-color: var(--accent); touch-action: auto; }
+        .task-info { flex: 1; min-width: 0; pointer-events: none; } 
         .task-name { font-weight: 700; font-size: 0.9rem; color: #fff; }
-        .task-note { font-size: 0.7rem; color: var(--note); margin-top: 1px; }
+        .task-note { font-size: 0.7rem; color: var(--note); pointer-events: auto; }
 
-        .tool-btn { background: #21262d; color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; padding: 6px 10px; font-size: 12px; margin-left: 5px; cursor: pointer; }
+        .tool-btn { background: #21262d; color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; padding: 8px; font-size: 14px; margin-left: 5px; cursor: pointer; touch-action: auto; }
         .btn-reset { width: 100%; padding: 12px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; margin: 20px 0; font-weight: bold; }
         #csvFile { display: none; }
     </style>
 </head>
 <body>
- 
 <div class="container">
     <div class="fixed-header">
         <div class="slot-bar">
@@ -86,23 +78,20 @@
             <button class="slot-btn" onclick="switchSlot(4)" ondblclick="renameSlot(4)" id="slotBtn4">Keep4</button>
             <button class="slot-btn" onclick="switchSlot(5)" ondblclick="renameSlot(5)" id="slotBtn5">Keep5</button>
         </div>
-        <div class="rename-hint">※ダブルタップで名前変更 / 🔄ボタンでカテゴリ変更</div>
-
         <div class="top-status-bar">
             <div id="dateDisplay" style="font-weight:800;">---</div>
             <div id="ptsBadge" class="pts-badge">0</div>
         </div>
- 
         <div class="add-form">
             <select id="daySelector" onchange="checkLock()" style="width:100%; background:#000; color:var(--accent); border:1px solid var(--accent); font-weight:bold; margin-bottom:5px;">
                 <option value="">-- UNLOCK BY SELECTING DAY --</option>
                 <option value="mon">MONDAY (泡更新)</option><option value="wed">WEDNESDAY (泡更新)</option><option value="fri">FRIDAY (泡更新)</option><option value="other">OTHER DAYS</option>
             </select>
             <div class="input-row">
-                <input type="text" id="newName" style="flex:2" placeholder="New Task Name">
+                <input type="text" id="newName" style="flex:2" placeholder="Task Name">
                 <input type="number" id="newPts" style="flex:0.5" placeholder="pt">
                 <select id="newCat" style="flex:1">
-                    <option value="daily">デイリー</option><option value="hazama">狭間</option><option value="full">フル</option><option value="long">長期</option><option value="none">待機</option>
+                    <option value="daily">DAILY</option><option value="hazama">HAZAMA</option><option value="full">FULL</option><option value="long">LONG</option><option value="none">STANDBY</option>
                 </select>
                 <button class="add-btn" onclick="addNewTask()">ADD</button>
             </div>
@@ -114,7 +103,6 @@
             </div>
         </div>
     </div>
- 
     <div id="mainContent" class="locked">
         <div id="categoryContainers"></div>
         <button class="btn-reset" onclick="resetAll()">RESET ALL ACTIVITIES</button>
@@ -124,7 +112,6 @@
 <script>
     const catKeys = ["daily", "hazama", "full", "long", "none"];
     const catNames = { daily: "DAILY", hazama: "HAZAMA", full: "FULL", long: "LONG-TERM", none: "STANDBY" };
-
     let currentSlot = localStorage.getItem('currentSlot') || 1;
     let activities = [];
     let slotNames = JSON.parse(localStorage.getItem('slotNames')) || ["Keep1", "Keep2", "Keep3", "Keep4", "Keep5"];
@@ -140,117 +127,76 @@
         const container = document.getElementById('categoryContainers');
         container.innerHTML = "";
         let total = 0;
-
         catKeys.forEach(catKey => {
             const tasks = activities.filter(t => t.cat === catKey);
             if (tasks.length === 0 && catKey !== 'daily' && catKey !== 'none') return;
-
             const section = document.createElement('div');
             section.className = `cat-section ${catStatus[catKey] ? '' : 'closed'}`;
             section.innerHTML = `<div class="cat-header cat-${catKey}" onclick="toggleCat('${catKey}')"><span>${catNames[catKey]}</span><span>${tasks.length}</span></div><div class="task-list"></div>`;
-            
             const listDiv = section.querySelector('.task-list');
             tasks.forEach(task => {
                 if (task.checked && catKey === 'daily') total += (parseInt(task.pts) || 0);
-                
                 const idx = activities.indexOf(task);
                 const item = document.createElement('div');
                 item.className = `task-item ${task.checked ? 'checked' : ''}`;
-                item.draggable = true;
+                item.dataset.index = idx;
                 item.innerHTML = `
                     <div class="cat-move-btn" onclick="changeCat(${idx}, event)">🔄</div>
                     <input type="checkbox" onchange="toggleTask(${idx})" ${task.checked ? 'checked' : ''}>
-                    <div class="task-info">
-                        <div class="task-name">${task.name} <span style="color:var(--accent); font-size:0.7rem;">+${task.pts||0}pt</span></div>
-                        <div class="task-note" onclick="editNote(${idx})">${task.note || 'Edit note...'}</div>
-                    </div>
+                    <div class="task-info"><div class="task-name">${task.name} <span style="color:var(--accent); font-size:0.7rem;">+${task.pts||0}pt</span></div><div class="task-note" onclick="editNote(${idx})">${task.note || 'Edit...'}</div></div>
                     ${catKey === 'none' ? `<button class="tool-btn" onclick="deleteTask(${idx})">🗑️</button>` : ''}
                 `;
-
-                item.addEventListener('dragstart', (e) => { e.target.classList.add('dragging'); dragSrc = idx; });
-                item.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); renderList(); });
-                item.addEventListener('dragover', (e) => e.preventDefault());
-                item.addEventListener('drop', (e) => { e.preventDefault(); moveTask(dragSrc, idx); });
-                
-                // スマホ用簡易ドラッグ
-                item.ontouchmove = (e) => { if(e.touches.length > 1) return; const touch = e.touches[0]; const afterElement = getDragAfterElement(listDiv, touch.clientY); if(afterElement == null) listDiv.appendChild(item); else listDiv.insertBefore(item, afterElement); };
-                item.ontouchend = () => { const taskItems = Array.from(document.querySelectorAll('.task-item')); activities = taskItems.map(it => activities[it.dataset ? it.dataset.index : Array.from(it.parentNode.children).indexOf(it)]); renderList(); };
-
+                // スマホ・PC両対応ドラッグ
+                item.onpointerdown = startDrag;
                 listDiv.appendChild(item);
             });
             container.appendChild(section);
         });
-
         document.getElementById('ptsBadge').innerText = total;
         document.getElementById('ptsBadge').classList.toggle('reached', total >= 145);
         localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities));
     }
 
-    let dragSrc = null;
-
-    function getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('.task-item:not(.dragging)')];
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
-            else return closest;
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    let dragItem = null;
+    function startDrag(e) {
+        if (e.target.closest('button, input, .cat-move-btn, .task-note')) return;
+        dragItem = e.currentTarget;
+        dragItem.classList.add('dragging');
+        dragItem.setPointerCapture(e.pointerId);
+        dragItem.onpointermove = (ev) => {
+            const list = dragItem.closest('.task-list');
+            const afterElement = [...list.querySelectorAll('.task-item:not(.dragging)')].reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = ev.clientY - box.top - box.height / 2;
+                return (offset < 0 && offset > closest.offset) ? { offset, element: child } : closest;
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+            if (afterElement == null) list.appendChild(dragItem); else list.insertBefore(dragItem, afterElement);
+        };
+        dragItem.onpointerup = () => {
+            dragItem.onpointermove = null;
+            dragItem.onpointerup = null;
+            dragItem.classList.remove('dragging');
+            const newOrder = [...document.querySelectorAll('.task-item')].map(el => activities[parseInt(el.dataset.index)]);
+            activities = newOrder;
+            renderList();
+        };
     }
 
     function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
     function toggleCat(k) { catStatus[k] = !catStatus[k]; renderList(); }
     function changeCat(i, e) { e.stopPropagation(); const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
-    function moveTask(from, to) { const item = activities.splice(from, 1)[0]; activities.splice(to, 0, item); renderList(); }
     function switchSlot(s) { saveData(); currentSlot = s; updateSlotUI(); loadData(); }
     function renameSlot(s) { const n = prompt("New Name:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,10); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
     function updateSlotUI() { document.querySelectorAll('.slot-btn').forEach((b,i)=>{ b.innerText = slotNames[i]; b.classList.toggle('active', i+1==currentSlot); }); localStorage.setItem('currentSlot', currentSlot); }
     function saveData() { localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities)); }
-    function syncAllSlots() { if(confirm("Copy THIS list to ALL Keep slots?")) { saveData(); for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
-    
-    function addNewTask() {
-        const name = document.getElementById('newName').value;
-        const pts = document.getElementById('newPts').value || 0;
-        const cat = document.getElementById('newCat').value;
-        if (!name) return;
-        activities.unshift({ name: name, pts: parseInt(pts), cat: cat, checked: false, note: "" });
-        document.getElementById('newName').value = ""; document.getElementById('newPts').value = "";
-        renderList();
-    }
-
-    function exportCSV() {
-        let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n";
-        activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `${slotNames[currentSlot-1]}_tasks.csv`;
-        link.click();
-    }
-
-    function importCSV(input) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const lines = e.target.result.split("\n");
-            const news = [];
-            for(let i=1; i<lines.length; i++) {
-                const c = lines[i].split(",");
-                if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false });
-            }
-            if(news.length > 0 && confirm("Overwrite Keep" + currentSlot + "?")) { activities = news; renderList(); }
-        };
-        reader.readAsText(file);
-    }
-
+    function syncAllSlots() { if(confirm("Copy THIS list to ALL Keep?")) { saveData(); for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
+    function addNewTask() { const n = document.getElementById('newName').value; const p = document.getElementById('newPts').value || 0; const c = document.getElementById('newCat').value; if (!n) return; activities.unshift({ name: n, pts: parseInt(p), cat: c, checked: false, note: "" }); document.getElementById('newName').value = ""; document.getElementById('newPts').value = ""; renderList(); }
+    function exportCSV() { let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n"; activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${slotNames[currentSlot-1]}_tasks.csv`; link.click(); }
+    function importCSV(input) { const file = input.files[0]; const reader = new FileReader(); reader.onload = (e) => { const lines = e.target.result.split("\n"); const news = []; for(let i=1; i<lines.length; i++) { const c = lines[i].split(","); if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false }); } if(news.length > 0) { activities = news; renderList(); } }; reader.readAsText(file); }
     function deleteTask(i) { if(confirm("Delete?")) { activities.splice(i,1); renderList(); } }
-    function resetAll() { if(confirm("Reset checks for Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
+    function resetAll() { if(confirm("Reset Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
-
-    window.onload = () => {
-        document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' });
-        updateSlotUI(); loadData();
-    };
+    window.onload = () => { document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' }); updateSlotUI(); loadData(); };
 </script>
 </body>
 </html>
