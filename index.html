@@ -2,8 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Game Master - Stylish Edition</title>
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+    
     <style>
         :root { 
             --bg: #0b0e14; 
@@ -29,11 +33,11 @@
             color: var(--text); 
             padding: 0; margin: 0; 
             line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
         }
 
         .container { max-width: 600px; margin: auto; padding: 0 12px; }
  
-        /* 固定ヘッダー */
         .fixed-header { 
             position: sticky; top: 0; z-index: 1100; 
             background: var(--header-bg); 
@@ -42,7 +46,6 @@
             border-bottom: 1px solid var(--border); 
         }
         
-        /* スロット切り替え (Keep1-5) */
         .slot-bar { display: flex; gap: 6px; margin-bottom: 4px; }
         .slot-btn { 
             flex: 1; padding: 10px 4px; font-size: 10px; font-weight: 600;
@@ -77,7 +80,6 @@
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
  
-        /* 追加フォーム */
         .add-form { 
             background: var(--card); padding: 12px; border-radius: 12px; 
             display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; 
@@ -102,7 +104,6 @@
         }
         .sync-btn { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); font-weight: bold; }
  
-        /* メインリスト */
         #mainContent { position: relative; padding-top: 10px; transition: filter 0.3s; }
         .locked { opacity: 0.15; pointer-events: none; filter: blur(6px); }
         .reward-alert-section { 
@@ -322,12 +323,25 @@
  
         Object.keys(catNames).forEach(catKey => {
             const catTasks = activities.filter(t => {
+                // スタンバイ中の項目は絶対にリワードに表示させない
+                if (t.cat === 'none' && catKey === 'reward') return false;
+
                 const match = t.note ? t.note.match(/(\d+)pt満額/) : null;
-                const isReady = match && currentTotal >= parseInt(match[1]);
-                if (catKey === 'reward') return isReady && !t.checked;
-                if (t.cat === catKey) return !(isReady && !t.checked);
+                // ポイント条件を満たしているかチェック
+                const isPointReady = match && currentTotal >= parseInt(match[1]);
+
+                if (catKey === 'reward') {
+                    // 「リワード」セクションには、ポイント達成済み かつ 未チェック のものを表示
+                    return isPointReady && !t.checked;
+                }
+                
+                if (t.cat === catKey) {
+                    // 元のカテゴリー内では、リワードセクションに移動中（達成済み＆未チェック）のものは非表示にする
+                    return !(isPointReady && !t.checked);
+                }
                 return false;
             });
+
             if (catTasks.length === 0 && (catKey !== 'daily' && catKey !== 'reward' && catKey !== 'none')) return;
             if (catKey === 'reward' && catTasks.length === 0) return;
             if (catKey === 'reward') rewardPending = true;
@@ -356,7 +370,7 @@
     function toggleCategory(k) { catStatus[k] = !catStatus[k]; renderList(); }
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value !== "" ? "" : "locked"; }
     function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
-    function changeCategory(i) { const k = Object.keys(catNames); activities[i].cat = k[(k.indexOf(activities[i].cat) + 1) % k.length]; if(activities[i].cat==='reward') activities[i].cat='daily'; renderList(); }
+    function changeCategory(i) { const k = Object.keys(catNames); activities[i].cat = k[(k.indexOf(activities[i].cat) + 1) % k.length]; if(activities[i].cat === 'reward') activities[i].cat = 'daily'; renderList(); }
     function moveTask(idx, dir) { const target = idx + dir; if (target >= 0 && target < activities.length && activities[idx].cat === activities[target].cat) { [activities[idx], activities[target]] = [activities[target], activities[idx]]; renderList(); } }
     function addNewTask() { const n = document.getElementById('newName').value; const p = parseInt(document.getElementById('newPts').value) || 0; const c = document.getElementById('newCat').value; if(n){ activities.unshift({name:n,pts:p,cat:c,checked:false,note:""}); catStatus[c]=true; document.getElementById('newName').value=""; document.getElementById('newPts').value=""; renderList(); } }
     function deleteTask(idx) { if(confirm("Delete?")) { activities.splice(idx,1); renderList(); } }
