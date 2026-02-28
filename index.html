@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Ultimate Stable</title>
+    <title>Game Master - Ultimate Stable V2</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -19,13 +19,12 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--text); padding: 0; margin: 0; 
-            line-height: 1.5; overflow-x: hidden;
+            line-height: 1.5; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
         }
 
         .container { max-width: 600px; margin: auto; padding: 0 12px; padding-bottom: 80px; }
         .fixed-header { position: sticky; top: 0; z-index: 1100; background: var(--header-bg); backdrop-filter: blur(10px); padding-top: 10px; border-bottom: 1px solid var(--border); }
         
-        /* Keepスロット */
         .slot-bar { display: flex; gap: 4px; margin-bottom: 6px; }
         .slot-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; }
         .slot-btn.active { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); }
@@ -34,7 +33,6 @@
         .pts-badge { background: #000; color: var(--accent); border: 2px solid var(--accent); padding: 4px 12px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; }
         .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
-        /* 追加・管理フォーム */
         .add-form { background: var(--card); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
         .input-row { display: flex; gap: 6px; align-items: center; }
         select, input { padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; background: #0d1117; color: #fff; outline: none; }
@@ -43,10 +41,8 @@
         .csv-actions { display: flex; gap: 4px; margin-top: 2px; }
         .csv-btn { background: #21262d; color: var(--text); border: 1px solid var(--border); padding: 5px; border-radius: 6px; font-size: 9px; flex: 1; cursor: pointer; }
 
-        /* カテゴリ見出し */
         .cat-header { font-size: 0.85rem; font-weight: 800; padding: 14px; border-radius: 10px; margin: 15px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); border: 1px solid transparent; }
         .cat-section.closed .task-list { display: none; }
-        .cat-section.closed .cat-header { opacity: 0.6; }
         
         .cat-daily { border-left: 4px solid var(--daily); color: var(--daily); }
         .cat-hazama { border-left: 4px solid var(--hazama); color: var(--hazama); }
@@ -54,28 +50,27 @@
         .cat-long { border-left: 4px solid var(--long); color: var(--long); }
         .cat-none { border-left: 4px solid var(--none); color: var(--note); }
 
-        /* タスク項目 */
         .task-item { display: flex; align-items: center; background: var(--card); padding: 8px 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border); min-height: 65px; position: relative; touch-action: none; }
-        .task-item.dragging { opacity: 0.4; background: #2d333b; transform: scale(0.98); z-index: 1000; }
+        .task-item.dragging { opacity: 0.4; background: #2d333b; z-index: 1000; border-color: var(--accent); }
         .task-item.checked { opacity: 0.25; filter: grayscale(1); }
         
-        .cat-move-btn { width: 44px; height: 44px; margin-right: 12px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 20px; color: var(--accent); flex-shrink: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .cat-move-btn { width: 44px; height: 44px; margin-right: 12px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 20px; color: var(--accent); flex-shrink: 0; cursor: pointer; }
         
-        input[type="checkbox"] { width: 28px; height: 28px; margin-right: 12px; flex-shrink: 0; cursor: pointer; z-index: 10; position: relative; }
-        .task-info { flex: 1; min-width: 0; pointer-events: none; } /* アイテム全体はドラッグに反応 */
+        input[type="checkbox"] { width: 28px; height: 28px; margin-right: 12px; flex-shrink: 0; cursor: pointer; }
+        .task-info { flex: 1; min-width: 0; pointer-events: none; } 
         .task-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
         
-        /* 備考欄のスタイル改良 */
+        /* 備考欄 - タップしやすく改善 */
         .task-note { 
             font-size: 0.75rem; color: var(--note); margin-top: 4px; 
-            background: rgba(255,255,255,0.05); padding: 4px 8px; 
+            background: #21262d; padding: 6px 10px; 
             border-radius: 6px; display: inline-block; 
-            pointer-events: auto; /* ここだけタップ可能にする */
-            z-index: 10; position: relative;
-            border: 1px dashed rgba(255,255,255,0.1);
+            pointer-events: auto; /* クリック可能 */
+            border: 1px solid rgba(255,255,255,0.1);
         }
+        .task-note:active { background: var(--accent); color: white; }
 
-        .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; padding: 10px; font-size: 16px; margin-left: 8px; cursor: pointer; z-index: 10; position: relative; }
+        .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; padding: 10px; font-size: 16px; margin-left: 8px; cursor: pointer; }
         .btn-reset { width: 100%; padding: 14px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; margin: 30px 0; font-weight: bold; cursor: pointer; }
         
         .locked { opacity: 0.15; pointer-events: none; filter: blur(6px); }
@@ -86,11 +81,11 @@
 <div class="container">
     <div class="fixed-header">
         <div class="slot-bar">
-            <button class="slot-btn" onclick="switchSlot(1)" ondblclick="renameSlot(1)" id="slotBtn1">Keep1</button>
-            <button class="slot-btn" onclick="switchSlot(2)" ondblclick="renameSlot(2)" id="slotBtn2">Keep2</button>
-            <button class="slot-btn" onclick="switchSlot(3)" ondblclick="renameSlot(3)" id="slotBtn3">Keep3</button>
-            <button class="slot-btn" onclick="switchSlot(4)" ondblclick="renameSlot(4)" id="slotBtn4">Keep4</button>
-            <button class="slot-btn" onclick="switchSlot(5)" ondblclick="renameSlot(5)" id="slotBtn5">Keep5</button>
+            <button class="slot-btn" onclick="switchSlot(1)" id="slotBtn1">Keep1</button>
+            <button class="slot-btn" onclick="switchSlot(2)" id="slotBtn2">Keep2</button>
+            <button class="slot-btn" onclick="switchSlot(3)" id="slotBtn3">Keep3</button>
+            <button class="slot-btn" onclick="switchSlot(4)" id="slotBtn4">Keep4</button>
+            <button class="slot-btn" onclick="switchSlot(5)" id="slotBtn5">Keep5</button>
         </div>
         <div class="top-status-bar">
             <div id="dateDisplay" style="font-weight:800; font-size:1.1rem;">---</div>
@@ -149,7 +144,7 @@
             const header = document.createElement('div');
             header.className = `cat-header cat-${catKey}`;
             header.innerHTML = `<span>${catNames[catKey]}</span><span>${tasks.length}</span>`;
-            header.onclick = (e) => { e.preventDefault(); catStatus[catKey] = !catStatus[catKey]; localStorage.setItem('catStatus', JSON.stringify(catStatus)); renderList(); };
+            header.onclick = () => { catStatus[catKey] = !catStatus[catKey]; localStorage.setItem('catStatus', JSON.stringify(catStatus)); renderList(); };
             
             const listDiv = document.createElement('div');
             listDiv.className = 'task-list';
@@ -161,39 +156,38 @@
                 item.className = `task-item ${task.checked ? 'checked' : ''}`;
                 item.dataset.index = idx;
                 item.innerHTML = `
-                    <div class="cat-move-btn" onclick="event.stopPropagation(); changeCat(${idx})">🔄</div>
-                    <input type="checkbox" onchange="event.stopPropagation(); toggleTask(${idx})" ${task.checked ? 'checked' : ''}>
+                    <div class="cat-move-btn" onpointerup="changeCat(${idx}, event)">🔄</div>
+                    <input type="checkbox" onpointerup="toggleTask(${idx}, event)" ${task.checked ? 'checked' : ''}>
                     <div class="task-info">
                         <div class="task-name">${task.name} <span style="color:var(--accent); font-size:0.7rem;">+${task.pts||0}pt</span></div>
-                        <div class="task-note" onclick="event.stopPropagation(); editNote(${idx})">${task.note || '+ Note'}</div>
+                        <div class="task-note" onpointerup="editNote(${idx}, event)">${task.note || '+ Note'}</div>
                     </div>
-                    ${catKey === 'none' ? `<button class="tool-btn" onclick="event.stopPropagation(); deleteTask(${idx})">🗑️</button>` : ''}
+                    ${catKey === 'none' ? `<button class="tool-btn" onpointerup="deleteTask(${idx}, event)">🗑️</button>` : ''}
                 `;
 
-                // PC & スマホ兼用ドラッグロジック
+                // ポインターイベントによる高精度ドラッグ
                 let timer;
-                const startDrag = () => item.classList.add('dragging');
-
                 item.onpointerdown = (e) => {
-                    if (e.target.closest('button, input, .cat-move-btn, .task-note')) return;
-                    timer = setTimeout(startDrag, 400); // 0.4秒長押しで移動開始
+                    if (e.target.closest('.cat-move-btn, input, .task-note, .tool-btn')) return;
+                    timer = setTimeout(() => { item.classList.add('dragging'); }, 350);
                     item.setPointerCapture(e.pointerId);
                 };
 
                 item.onpointermove = (e) => {
                     if (!item.classList.contains('dragging')) return;
-                    e.preventDefault();
                     const target = document.elementFromPoint(e.clientX, e.clientY)?.closest('.task-item');
                     if (target && target !== item && target.parentNode === listDiv) {
                         const targetIdx = parseInt(target.dataset.index);
-                        moveTask(idx, targetIdx);
+                        const temp = activities.splice(parseInt(item.dataset.index), 1)[0];
+                        activities.splice(targetIdx, 0, temp);
+                        renderList(); // 即座に反映
                     }
                 };
 
                 item.onpointerup = (e) => {
                     clearTimeout(timer);
-                    item.classList.remove('dragging');
                     item.releasePointerCapture(e.pointerId);
+                    item.classList.remove('dragging');
                     saveData();
                 };
 
@@ -208,18 +202,20 @@
         saveData();
     }
 
-    function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
-    function changeCat(i) { const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
-    function moveTask(from, to) { const item = activities.splice(from, 1)[0]; activities.splice(to, 0, item); renderList(); }
+    // 各ボタンの操作（pointerupで確実に実行）
+    function toggleTask(i, e) { e.stopPropagation(); activities[i].checked = !activities[i].checked; renderList(); }
+    function changeCat(i, e) { e.stopPropagation(); const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
+    function editNote(i, e) { e.stopPropagation(); const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
+    function deleteTask(i, e) { e.stopPropagation(); if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
+
     function switchSlot(s) { saveData(); currentSlot = s; updateSlotUI(); loadData(); }
     function renameSlot(s) { const n = prompt("New Name:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
-    function updateSlotUI() { document.querySelectorAll('.slot-btn').forEach((b,i)=>{ b.innerText = slotNames[i]; b.classList.toggle('active', i+1==currentSlot); }); localStorage.setItem('currentSlot', currentSlot); }
+    function updateSlotUI() { document.querySelectorAll('.slot-btn').forEach((b,i)=>{ b.innerText = slotNames[i]; b.classList.toggle('active', i+1==currentSlot); b.ondblclick = () => renameSlot(i+1); }); localStorage.setItem('currentSlot', currentSlot); }
     function saveData() { localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities)); }
     function syncAllSlots() { if(confirm("Copy THIS list to ALL Keep?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
     function addNewTask() { const n = document.getElementById('newName').value; const p = document.getElementById('newPts').value || 0; if (!n) return; activities.unshift({ name: n, pts: parseInt(p), cat: 'daily', checked: false, note: "" }); document.getElementById('newName').value = ""; document.getElementById('newPts').value = ""; renderList(); }
     function exportCSV() { let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n"; activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${slotNames[currentSlot-1]}_tasks.csv`; link.click(); }
     function importCSV(input) { const file = input.files[0]; const reader = new FileReader(); reader.onload = (e) => { const lines = e.target.result.split("\n"); const news = []; for(let i=1; i<lines.length; i++) { const c = lines[i].split(","); if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false }); } if(news.length > 0) { activities = news; renderList(); } }; reader.readAsText(file); }
-    function deleteTask(i) { if(confirm("Delete?")) { activities.splice(i,1); renderList(); } }
     function resetAll() { if(confirm("Reset Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
 
