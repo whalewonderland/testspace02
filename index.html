@@ -20,6 +20,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--text); padding: 0; margin: 0; 
             line-height: 1.5; -webkit-text-size-adjust: 100%;
+            overflow-x: hidden;
         }
 
         .container { max-width: 600px; margin: auto; padding: 0 12px; }
@@ -31,68 +32,64 @@
         
         .slot-bar { display: flex; gap: 6px; margin-bottom: 4px; }
         .slot-btn { 
-            flex: 1; padding: 10px 4px; font-size: 10px; font-weight: 600;
+            flex: 1; padding: 12px 4px; font-size: 11px; font-weight: 800;
             background: transparent; color: var(--note); 
-            border: 1px solid var(--border); border-radius: 6px; 
-            cursor: pointer; transition: all 0.3s; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            border: 1px solid var(--border); border-radius: 8px; 
+            cursor: pointer; transition: all 0.2s;
         }
         .slot-btn.active { 
-            background: rgba(14, 165, 233, 0.15); color: var(--accent); border-color: var(--accent); 
-            box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+            background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); 
         }
-        .rename-hint { font-size: 8px; color: var(--none); text-align: center; margin-bottom: 8px; }
 
         .top-status-bar { 
             background: var(--card); display: flex; justify-content: space-between; align-items: center; 
             padding: 12px 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border);
         }
         .pts-badge { 
-            background: #000; color: var(--accent); border: 1.5px solid var(--accent); 
-            padding: 6px 16px; border-radius: 30px; font-weight: 800; font-size: 1.1rem;
+            background: #000; color: var(--accent); border: 2px solid var(--accent); 
+            padding: 6px 16px; border-radius: 30px; font-weight: 800; font-size: 1.2rem;
         }
-        .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
-        .add-form { background: var(--card); padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; border: 1px solid var(--border); }
-        .input-row { display: flex; gap: 8px; align-items: center; }
-        select, input { padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: #0d1117; color: #fff; outline: none; }
-        .add-btn { background: var(--accent); color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
-       
-        .csv-actions { display: flex; gap: 6px; }
-        .csv-btn { background: #21262d; color: var(--text); border: 1px solid var(--border); padding: 6px; border-radius: 6px; font-size: 9px; flex: 1; cursor: pointer; }
-        .sync-btn { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); font-weight: bold; }
- 
-        .cat-section { margin-top: 15px; }
-        .cat-header { font-size: 0.8rem; font-weight: 700; padding: 12px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; text-transform: uppercase; }
-        .cat-section.closed .task-list { display: none; }
-       
-        .cat-daily { background: rgba(56, 189, 248, 0.1); color: var(--daily); border: 1px solid rgba(56, 189, 248, 0.3); }
-        .cat-reward { background: rgba(210, 153, 34, 0.1); color: var(--gold); border: 1px solid rgba(210, 153, 34, 0.3); }
-        .cat-hazama { background: rgba(251, 191, 36, 0.1); color: var(--hazama); border: 1px solid rgba(251, 191, 36, 0.3); }
-        .cat-full { background: rgba(244, 63, 94, 0.1); color: var(--full); border: 1px solid rgba(244, 63, 94, 0.3); }
-        .cat-long { background: rgba(168, 85, 247, 0.1); color: var(--long); border: 1px solid rgba(168, 85, 247, 0.3); }
-        .cat-none { background: rgba(72, 79, 88, 0.1); color: var(--note); border: 1px solid rgba(72, 79, 88, 0.3); }
- 
-        /* ドラッグ要素のスタイル */
+        /* タスクアイテムの改良 */
         .task-item { 
             display: flex; align-items: center; background: var(--card); 
-            padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid var(--border);
-            cursor: grab; transition: transform 0.2s, background 0.2s;
-            user-select: none; -webkit-user-drag: element;
+            padding: 4px 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border);
+            min-height: 60px;
+            transition: transform 0.1s;
+            touch-action: pan-y; /* 縦スクロールを邪魔しない */
         }
-        .task-item.dragging { opacity: 0.5; background: #21262d; transform: scale(1.02); }
-        .task-item.checked { opacity: 0.3; filter: grayscale(0.8); }
+        .task-item.dragging { opacity: 0.4; transform: scale(0.98); background: #21262d; }
+        .task-item.checked { opacity: 0.25; filter: grayscale(1); }
         
-        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--accent); cursor: pointer; }
-        .task-info { flex: 1; pointer-events: none; } /* テキスト部分はドラッグを邪魔しないように */
-        .task-name { font-weight: 600; font-size: 0.9rem; color: #fff; }
-        .task-note { font-size: 0.75rem; color: var(--note); pointer-events: auto; } /* 備考はタップ可能に */
+        /* カテゴリ変更ボタンを大きく左側に配置 */
+        .cat-move-btn {
+            width: 44px; height: 44px; margin-right: 8px;
+            display: flex; align-items: center; justify-content: center;
+            background: #21262d; border: 1px solid var(--border);
+            border-radius: 10px; font-size: 20px; cursor: pointer;
+            color: var(--accent); flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cat-move-btn:active { background: var(--accent); color: #fff; }
 
-        .tool-box { display: flex; gap: 4px; margin-left: 8px; }
-        .tool-btn { background: #21262d; color: var(--note); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 10px; cursor: pointer; pointer-events: auto; }
+        input[type="checkbox"] { width: 26px; height: 26px; margin-right: 12px; flex-shrink: 0; }
 
-        .btn-reset { width: 100%; padding: 14px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; margin: 30px 0; font-weight: bold; cursor: pointer; }
-        #csvFile { display: none; }
+        .task-info { flex: 1; min-width: 0; padding: 8px 0; }
+        .task-name { font-weight: 700; font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .task-note { font-size: 0.75rem; color: var(--note); margin-top: 2px; }
+
+        .del-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; padding: 8px; font-size: 14px; margin-left: 8px; }
+
+        /* カテゴリヘッダー */
+        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 14px; border-radius: 10px; margin: 15px 0 8px; display: flex; justify-content: space-between; cursor: pointer; }
+        .cat-section.closed .task-list { display: none; }
+        .cat-daily { background: rgba(56, 189, 248, 0.15); color: var(--daily); }
+        .cat-hazama { background: rgba(251, 191, 36, 0.15); color: var(--hazama); }
+        .cat-full { background: rgba(244, 63, 94, 0.15); color: var(--full); }
+        .cat-none { background: #21262d; color: var(--note); }
+
+        .locked { opacity: 0.2; pointer-events: none; filter: blur(4px); }
     </style>
 </head>
 <body>
@@ -100,209 +97,137 @@
 <div class="container">
     <div class="fixed-header">
         <div class="slot-bar">
-            <button class="slot-btn" onclick="switchSlot(1)" ondblclick="renameSlot(1)" id="slotBtn1">Keep1</button>
-            <button class="slot-btn" onclick="switchSlot(2)" ondblclick="renameSlot(2)" id="slotBtn2">Keep2</button>
-            <button class="slot-btn" onclick="switchSlot(3)" ondblclick="renameSlot(3)" id="slotBtn3">Keep3</button>
-            <button class="slot-btn" onclick="switchSlot(4)" ondblclick="renameSlot(4)" id="slotBtn4">Keep4</button>
-            <button class="slot-btn" onclick="switchSlot(5)" ondblclick="renameSlot(5)" id="slotBtn5">Keep5</button>
+            <button class="slot-btn" onclick="switchSlot(1)" id="slotBtn1">Keep1</button>
+            <button class="slot-btn" onclick="switchSlot(2)" id="slotBtn2">Keep2</button>
+            <button class="slot-btn" onclick="switchSlot(3)" id="slotBtn3">Keep3</button>
+            <button class="slot-btn" onclick="switchSlot(4)" id="slotBtn4">Keep4</button>
+            <button class="slot-btn" onclick="switchSlot(5)" id="slotBtn5">Keep5</button>
         </div>
-        <div class="rename-hint">※各ボタンをダブルタップで名前変更 / タスクを長押しで入れ替え</div>
 
         <div class="top-status-bar">
             <div class="header-left">
-                <span class="info-date" id="dateDisplay">---</span>
-                <span class="info-reset" id="resetDisplay">---</span>
+                <span id="dateDisplay" style="font-weight:800; font-size:1.1rem;">---</span>
             </div>
-            <div class="header-right"><div id="ptsBadge" class="pts-badge">0</div></div>
+            <div id="ptsBadge" class="pts-badge">0</div>
         </div>
  
-        <div class="add-form">
-            <div class="input-row">
-                <select id="daySelector" onchange="checkLock()" style="flex:2; background: #0d1117; color: var(--accent); border: 1px solid var(--border);">
-                    <option value="">-- UNLOCK BY SELECTING DAY --</option>
-                    <option value="mon">MONDAY (泡更新)</option><option value="wed">WEDNESDAY (泡更新)</option><option value="fri">FRIDAY (泡更新)</option><option value="other">OTHER DAYS</option>
-                </select>
-            </div>
-            <div class="input-row">
-                <input type="text" id="newName" style="flex:2" placeholder="Task Name">
-                <input type="number" id="newPts" style="flex:0.5" placeholder="pt">
-                <button class="add-btn" onclick="addNewTask()">ADD</button>
-            </div>
-            <div class="input-row">
-                <select id="newCat" style="flex:1">
-                    <option value="hazama">狭間</option><option value="full">フル</option><option value="long">長期</option><option value="daily" selected>デイリー</option><option value="none">待機</option>
-                </select>
-                <div class="csv-actions" style="flex:1.5">
-                    <button class="csv-btn" onclick="exportCSV()">EXPORT</button>
-                    <button class="csv-btn" onclick="document.getElementById('csvFile').click()">IMPORT</button>
-                    <button class="csv-btn sync-btn" onclick="syncAllSlots()">ALL SYNC</button>
-                    <input type="file" id="csvFile" accept=".csv" onchange="importCSV(this)">
-                </div>
+        <div class="add-form" style="background:var(--card); padding:10px; border-radius:12px; border:1px solid var(--border); margin-bottom:10px;">
+            <select id="daySelector" onchange="checkLock()" style="width:100%; padding:10px; margin-bottom:8px; background:#000; color:var(--accent); border:1px solid var(--accent); border-radius:8px; font-weight:bold;">
+                <option value="">-- UNLOCK BY SELECTING DAY --</option>
+                <option value="mon">MONDAY (泡更新)</option><option value="wed">WEDNESDAY (泡更新)</option><option value="fri">FRIDAY (泡更新)</option><option value="other">OTHER DAYS</option>
+            </select>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="newName" style="flex:1" placeholder="Task Name">
+                <button onclick="addNewTask()" style="background:var(--accent); border:none; color:#fff; padding:0 15px; border-radius:8px; font-weight:bold;">ADD</button>
             </div>
         </div>
     </div>
  
     <div id="mainContent" class="locked">
-        <div id="rewardAlert" class="reward-alert-section" style="display: none;">REWARD AVAILABLE NOW!</div>
         <div id="categoryContainers"></div>
-        <button class="btn-reset" onclick="resetAll()">RESET ALL ACTIVITIES</button>
     </div>
 </div>
  
 <script>
-    const catNames = { reward: "🎁 REWARD", daily: "DAILY ACTIVITY", hazama: "HAZAMA EVENT", full: "FULL EVENT", long: "LONG-TERM", none: "STANDBY" };
-    const defaultActivities = [
-        { name: "資源の採取", pts: 5, note: "リセット前から", cat: "daily", checked: false },
-        { name: "美人に挨拶", pts: 10, note: "5回以上！", cat: "daily", checked: false }
-        // ... 他の初期データは省略（既存のリストが引き継がれます）
-    ];
+    const catKeys = ["daily", "hazama", "full", "long", "none"];
+    const catNames = { daily: "DAILY", hazama: "HAZAMA", full: "FULL", long: "LONG-TERM", none: "STANDBY" };
 
     let currentSlot = localStorage.getItem('currentSlot') || 1;
-    let catStatus, activities;
-    let slotNames = JSON.parse(localStorage.getItem('slotNames')) || ["Keep1", "Keep2", "Keep3", "Keep4", "Keep5"];
+    let activities = [];
+    let catStatus = { daily: true, hazama: true, full: true, long: true, none: true };
 
-    function loadSlotData(slot) {
-        const savedActivities = localStorage.getItem(`activities_slot${slot}`);
-        const savedStatus = localStorage.getItem(`catStatus_slot${slot}`);
-        activities = savedActivities ? JSON.parse(savedActivities) : JSON.parse(JSON.stringify(defaultActivities));
-        catStatus = savedStatus ? JSON.parse(savedStatus) : { reward: true, daily: true, hazama: false, full: false, long: false, none: false };
+    function loadData() {
+        const saved = localStorage.getItem(`activities_slot${currentSlot}`);
+        activities = saved ? JSON.parse(saved) : [];
+        renderList();
     }
-
-    function switchSlot(slotNum) { saveData(); currentSlot = slotNum; localStorage.setItem('currentSlot', currentSlot); loadSlotData(currentSlot); updateSlotUI(); renderList(); checkLock(); }
-    function renameSlot(slotNum) { const newName = prompt("名前を変更:", slotNames[slotNum - 1]); if (newName) { slotNames[slotNum - 1] = newName.substring(0, 10); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
-    function updateSlotUI() { for (let i = 1; i <= 5; i++) { const btn = document.getElementById(`slotBtn${i}`); btn.innerText = slotNames[i-1]; btn.classList.toggle('active', i == currentSlot); } }
-    function saveData() { localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities)); localStorage.setItem(`catStatus_slot${currentSlot}`, JSON.stringify(catStatus)); }
-    function syncAllSlots() { if (confirm("全スロット同期しますか？")) { saveData(); for (let i = 1; i <= 5; i++) { localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); localStorage.setItem(`catStatus_slot${i}`, JSON.stringify(catStatus)); } alert("Synced."); } }
 
     function renderList() {
         const container = document.getElementById('categoryContainers');
         container.innerHTML = "";
-        let currentTotal = calculateTotal();
-        let rewardPending = false;
- 
-        Object.keys(catNames).forEach(catKey => {
-            const catTasks = activities.filter(t => {
-                if (t.cat === 'none' && catKey === 'reward') return false;
-                const match = t.note ? t.note.match(/(\d+)pt満額/) : null;
-                const isPointReady = match && currentTotal >= parseInt(match[1]);
-                if (catKey === 'reward') return isPointReady && !t.checked;
-                if (t.cat === catKey) return !(isPointReady && !t.checked);
-                return false;
-            });
+        let total = 0;
 
-            if (catTasks.length === 0 && (catKey !== 'daily' && catKey !== 'reward' && catKey !== 'none')) return;
-            if (catKey === 'reward' && catTasks.length === 0) return;
-            if (catKey === 'reward') rewardPending = true;
- 
+        catKeys.forEach(catKey => {
+            const tasks = activities.filter(t => t.cat === catKey);
+            if (tasks.length === 0 && catKey !== 'daily' && catKey !== 'none') return;
+
             const section = document.createElement('div');
             section.className = `cat-section ${catStatus[catKey] ? '' : 'closed'}`;
-            section.innerHTML = `<div class="cat-header cat-${catKey}" onclick="toggleCategory('${catKey}')"><span>${catNames[catKey]}</span><span>${catTasks.filter(t=>t.checked).length}/${catTasks.length}</span></div><div class="task-list" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${catKey}')"></div>`;
-            const listDiv = section.querySelector('.task-list');
+            section.innerHTML = `<div class="cat-header cat-${catKey}" onclick="toggleCat('${catKey}')"><span>${catNames[catKey]}</span><span>${tasks.length}</span></div><div class="task-list"></div>`;
             
-            catTasks.forEach(task => {
+            const listDiv = section.querySelector('.task-list');
+            tasks.forEach(task => {
+                if (task.checked && catKey === 'daily') total += (task.pts || 0);
+                
                 const idx = activities.indexOf(task);
-                const div = document.createElement('div');
-                div.className = `task-item ${task.checked ? 'checked' : ''}`;
-                div.draggable = true;
-                div.dataset.index = idx;
-                div.ondragstart = handleDragStart;
-                div.ondragend = handleDragEnd;
-                // スマホ用タッチイベント
-                div.ontouchmove = handleTouchMove;
-                div.ontouchend = handleTouchEnd;
+                const item = document.createElement('div');
+                item.className = `task-item ${task.checked ? 'checked' : ''}`;
+                item.draggable = true;
+                
+                // 左側に大きな移動ボタン、中央に名前、右端に削除
+                item.innerHTML = `
+                    <div class="cat-move-btn" onclick="changeCat(${idx}, event)">🔄</div>
+                    <input type="checkbox" onchange="toggleTask(${idx})" ${task.checked ? 'checked' : ''}>
+                    <div class="task-info">
+                        <div class="task-name">${task.name} <span style="color:var(--accent)">+${task.pts||0}</span></div>
+                        <div class="task-note" onclick="editNote(${idx})">${task.note || 'Edit note...'}</div>
+                    </div>
+                    ${catKey === 'none' ? `<button class="del-btn" onclick="deleteTask(${idx})">🗑️</button>` : ''}
+                `;
 
-                div.innerHTML = `<input type="checkbox" onchange="toggleTask(${idx})" ${task.checked ? 'checked' : ''}><div class="task-info"><div class="task-name">${task.name} <span style="font-size:0.7rem; color:var(--accent)">+${task.pts}pt</span></div><div class="task-note" onclick="editNote(${idx})">${task.note || 'Edit...'}</div></div><div class="tool-box"><button class="tool-btn" onclick="changeCategory(${idx})">🔄</button>${task.cat==='none'?'<button class="tool-btn del-btn" onclick="deleteTask('+idx+')">🗑️</button>':''}</div>`;
-                listDiv.appendChild(div);
+                // ドラッグ＆ドロップイベント (PC/スマホ両対応)
+                item.addEventListener('dragstart', (e) => { e.target.classList.add('dragging'); dragSrc = idx; });
+                item.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); renderList(); });
+                item.addEventListener('dragover', (e) => { e.preventDefault(); });
+                item.addEventListener('drop', (e) => { e.preventDefault(); moveTask(dragSrc, idx); });
+                
+                listDiv.appendChild(item);
             });
             container.appendChild(section);
         });
-        document.getElementById('rewardAlert').style.display = rewardPending ? 'block' : 'none';
-        updateScore(currentTotal); saveData();
+
+        document.getElementById('ptsBadge').innerText = total;
+        document.getElementById('ptsBadge').classList.toggle('reached', total >= 145);
+        localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities));
     }
 
-    // --- ドラッグ＆ドロップ用ロジック ---
-    let dragSrcIndex = null;
+    let dragSrc = null;
 
-    function handleDragStart(e) {
-        dragSrcIndex = this.dataset.index;
-        this.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-    }
-
-    function handleDragEnd(e) {
-        this.classList.remove('dragging');
-        document.querySelectorAll('.task-item').forEach(item => item.classList.remove('dragging'));
-    }
-
-    function handleDragOver(e) {
-        e.preventDefault();
-        const container = e.currentTarget;
-        const afterElement = getDragAfterElement(container, e.clientY);
-        const dragging = document.querySelector('.dragging');
-        if (afterElement == null) {
-            container.appendChild(dragging);
-        } else {
-            container.insertBefore(dragging, afterElement);
-        }
-    }
-
-    function handleDrop(e, catKey) {
-        e.preventDefault();
-        const taskItems = Array.from(document.querySelectorAll('.task-item'));
-        const newOrder = taskItems.map(item => activities[item.dataset.index]);
-        // ここで全データの並びを再構築
-        // 同じカテゴリー内での移動のみを想定
-        activities = newOrder; 
+    function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
+    function toggleCat(k) { catStatus[k] = !catStatus[k]; renderList(); }
+    
+    // カテゴリ変更を確実にする
+    function changeCat(i, e) {
+        e.stopPropagation(); // ドラッグが始まらないように保護
+        const current = activities[i].cat;
+        const nextIdx = (catKeys.indexOf(current) + 1) % catKeys.length;
+        activities[i].cat = catKeys[nextIdx];
         renderList();
     }
 
-    // 要素の挿入位置を計算
-    function getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('.task-item:not(.dragging)')];
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            if (offset < 0 && offset > closest.offset) {
-                return { offset: offset, element: child };
-            } else {
-                return closest;
-            }
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    function moveTask(from, to) {
+        const item = activities.splice(from, 1)[0];
+        activities.splice(to, 0, item);
+        renderList();
     }
 
-    // スマホ用の簡易対応（長押し・スワイプ）
-    let touchElement = null;
-    function handleTouchMove(e) {
-        const touch = e.touches[0];
-        const dragging = this;
-        dragging.classList.add('dragging');
-        const container = dragging.closest('.task-list');
-        const afterElement = getDragAfterElement(container, touch.clientY);
-        if (afterElement == null) {
-            container.appendChild(dragging);
-        } else {
-            container.insertBefore(dragging, afterElement);
-        }
-    }
-    function handleTouchEnd() {
-        this.classList.remove('dragging');
-        handleDrop({preventDefault:()=>{}}, '');
+    function addNewTask() {
+        const name = document.getElementById('newName').value;
+        if (!name) return;
+        activities.unshift({ name: name, pts: 0, cat: 'daily', checked: false, note: "" });
+        document.getElementById('newName').value = "";
+        renderList();
     }
 
-    function calculateTotal() { let t = 0; activities.forEach(a => { if (a.checked && a.cat === 'daily') t += a.pts; }); return t; }
-    function updateScore(t) { const b = document.getElementById('ptsBadge'); b.innerText = t; b.classList.toggle('reached', t >= 145); }
-    function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
-    function toggleCategory(k) { catStatus[k] = !catStatus[k]; renderList(); }
-    function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value !== "" ? "" : "locked"; }
-    function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
-    function changeCategory(i) { const k = Object.keys(catNames).filter(k=>k!=='reward'); activities[i].cat = k[(k.indexOf(activities[i].cat) + 1) % k.length]; renderList(); }
-    function addNewTask() { const n = document.getElementById('newName').value; const p = parseInt(document.getElementById('newPts').value) || 0; const c = document.getElementById('newCat').value; if(n){ activities.unshift({name:n,pts:p,cat:c,checked:false,note:""}); renderList(); } }
-    function deleteTask(idx) { if(confirm("Delete?")) { activities.splice(idx,1); renderList(); } }
-    function resetAll() { if(confirm("Reset Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
-    function updateHeader() { const now = new Date(); document.getElementById('dateDisplay').innerText = now.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' }); return `${now.getMonth() + 1}/${now.getDate()}`; }
+    function deleteTask(i) { if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
+    function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
+    function switchSlot(s) { currentSlot = s; document.querySelectorAll('.slot-btn').forEach((b,i)=>b.classList.toggle('active', i+1==s)); loadData(); }
+    function editNote(i) { const n = prompt("Note:", activities[i].note); if (n!==null) { activities[i].note = n; renderList(); } }
 
-    loadSlotData(currentSlot); updateSlotUI(); updateHeader(); renderList();
+    window.onload = () => {
+        document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' });
+        switchSlot(currentSlot);
+    };
 </script>
 </body>
 </html>
-
