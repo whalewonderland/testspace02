@@ -1,4 +1,4 @@
-？<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -93,7 +93,7 @@
 <body>
 <div class="container">
     <div class="fixed-header">
-        <div class="version-tag">v26.03.01.v2</div>
+        <div class="version-tag">v26.03.01.v3</div>
         <div class="app-title">Todo@Evony</div>
         <div class="slot-bar">
             <button class="slot-btn" id="slotBtn1">Keep1</button>
@@ -102,7 +102,7 @@
             <button class="slot-btn" id="slotBtn4">Keep4</button>
             <button class="slot-btn" id="slotBtn5">Keep5</button>
         </div>
-        <div class="slot-hint">※各アカウント名をダブルタップで編集</div>
+        <div class="slot-hint">※各アカウント名を長押しで編集</div>
         <div class="top-status-bar">
             <div id="dateDisplay" style="font-weight:800; font-size:1.1rem; z-index:2;">---</div>
             <div id="ptsBadge" class="pts-badge">0</div>
@@ -198,8 +198,17 @@
             const btn = document.getElementById(`slotBtn${i}`);
             btn.innerText = slotNames[i-1];
             btn.classList.toggle('active', i == currentSlot);
-            btn.onclick = () => switchSlot(i);
-            btn.ondblclick = () => renameSlot(i);
+            
+            // タッチ判定の強化
+            let pressTimer;
+            btn.onpointerdown = () => { pressTimer = window.setTimeout(() => renameSlot(i), 1000); };
+            btn.onpointerup = () => { window.clearTimeout(pressTimer); };
+            btn.onpointerleave = () => { window.clearTimeout(pressTimer); };
+            
+            btn.onclick = (e) => { 
+                if (e.detail >= 2) { renameSlot(i); } // ダブルタップ対応
+                else { switchSlot(i); } 
+            };
         }
         localStorage.setItem('currentSlot', currentSlot);
     }
