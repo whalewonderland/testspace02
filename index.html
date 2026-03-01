@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Multi-Reward Edition</title>
+    <title>Game Master - Fixed Pts Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -67,7 +67,6 @@
             transition: background 0.3s, border-color 0.3s;
         }
 
-        /* 満額達成時の特別スタイル */
         .task-item.reward-ready {
             background: var(--reward-bg);
             border-color: var(--gold);
@@ -162,6 +161,8 @@
     function renderList() {
         const container = document.getElementById('categoryContainers');
         container.innerHTML = "";
+        
+        // ポイント計算をここだけで完結させる（重複防止）
         let total = calculateTotal();
 
         catKeys.forEach(catKey => {
@@ -186,12 +187,10 @@
                 const task = item.task;
                 const originalIdx = item.originalIdx;
                 
-                // 満額判定ロジック
+                // 達成判定（チェックが入っていない時だけ光らせる）
                 const match = task.note ? task.note.match(/(\d+)pt満額/) : null;
                 const isFullfilled = match && total >= parseInt(match[1]) && !task.checked;
 
-                if (task.checked && catKey === 'daily') total += (parseInt(task.pts) || 0);
-                
                 const taskDiv = document.createElement('div');
                 taskDiv.className = `task-item ${task.checked ? 'checked' : ''} ${isFullfilled ? 'reward-ready' : ''}`;
                 
@@ -261,4 +260,3 @@
 </script>
 </body>
 </html>
-
