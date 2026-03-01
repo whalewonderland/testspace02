@@ -49,6 +49,11 @@
 
         .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); position: relative; overflow: hidden; }
         .progress-line { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--accent); transition: width 0.3s; }
+        
+        .header-left { display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+        #dateDisplay { font-weight: 800; font-size: 1rem; }
+        #resetDisplay { font-size: 10px; color: var(--accent); font-weight: bold; }
+
         .pts-badge { background: #000; color: var(--accent); border: 2.2px solid var(--accent); padding: 4px 14px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; z-index: 2; }
         .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
@@ -93,7 +98,7 @@
 <body>
 <div class="container">
     <div class="fixed-header">
-        <div class="version-tag">v26.03.01.v4</div>
+        <div class="version-tag">v26.03.01.v5</div>
         <div class="app-title">Todo@Evony</div>
         <div class="slot-bar">
             <button class="slot-btn" id="slotBtn1">Keep1</button>
@@ -104,7 +109,10 @@
         </div>
         <div class="slot-hint">※各アカウント名を長押しで編集</div>
         <div class="top-status-bar">
-            <div id="dateDisplay" style="font-weight:800; font-size:1.1rem; z-index:2;">---</div>
+            <div class="header-left">
+                <div id="dateDisplay">---</div>
+                <div id="resetDisplay">Reset in --:--:--</div>
+            </div>
             <div id="ptsBadge" class="pts-badge">0</div>
             <div id="progressLine" class="progress-line" style="width: 0%;"></div>
         </div>
@@ -184,22 +192,12 @@
         saveData();
     }
 
-    // 数値計算をより厳密に行うよう修正
-    function calculateTotal() { 
-        return activities.reduce((sum, t) => {
-            if (t.checked && t.cat === 'daily') {
-                return sum + (Number(t.pts) || 0);
-            }
-            return sum;
-        }, 0); 
-    }
-
+    function calculateTotal() { return activities.reduce((sum, t) => (t.checked && t.cat === 'daily' ? sum + (Number(t.pts) || 0) : sum), 0); }
     function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
     function changeCat(i) { const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
     function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
     function deleteTask(i) { if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
     function moveByCat(originalIdx, direction, catKey) { const catItems = activities.filter(t => t.cat === catKey); const itemToMove = activities[originalIdx]; const currentPosInCat = catItems.indexOf(itemToMove); const targetPosInCat = currentPosInCat + direction; if (targetPosInCat < 0 || targetPosInCat >= catItems.length) return; const targetItem = catItems[targetPosInCat]; const targetOriginalIdx = activities.indexOf(targetItem); activities[originalIdx] = targetItem; activities[targetOriginalIdx] = itemToMove; renderList(); }
-    
     function switchSlot(s) { saveData(); currentSlot = s; updateSlotUI(); loadData(); }
     function renameSlot(s) { const n = prompt("New account name:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
     
@@ -217,24 +215,43 @@
         localStorage.setItem('currentSlot', currentSlot);
     }
 
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('dateDisplay').innerText = now.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' });
+        
+        // 夏時間・冬時間の判定とリセット時間の設定
+        const month = now.getUTCMonth();
+        const date = now.getUTCDate();
+        const day = now.getUTCDay();
+        
+        // 3月第2日曜〜11月第1日曜が夏時間
+        const startDST = 14 - (new Date(Date.UTC(now.getUTCFullYear(), 2, 1)).getUTCDay());
+        const endDST = 7 - (new Date(Date.UTC(now.getUTCFullYear(), 10, 1)).getUTCDay());
+        
+        const isDST = (month > 2 && month < 10) || (month === 2 && date >= startDST) || (month === 10 && date < endDST);
+        const resetHour = isDST ? 7 : 8; // UTC 7:00(16時) or 8:00(17時)
+        
+        let target = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), resetHour, 0, 0));
+        if (now >= target) target.setUTCDate(target.getUTCDate() + 1);
+        
+        const diff = target - now;
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('resetDisplay').innerText = `Reset in ${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
     function saveData() { localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities)); }
-    function syncAllSlots() { if(confirm("Copy current list to ALL 5 accounts?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
+    function syncAllSlots() { if(confirm("Copy THIS list to ALL 5 accounts?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
     function addNewTask() { const n = document.getElementById('newName').value; const p = document.getElementById('newPts').value || 0; if (!n) return; activities.unshift({ name: n, pts: parseInt(p), cat: 'daily', checked: false, note: "" }); document.getElementById('newName').value = ""; document.getElementById('newPts').value = ""; renderList(); }
     function exportCSV() { let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n"; activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${slotNames[currentSlot-1]}_tasks.csv`; link.click(); }
     function importCSV(input) { const file = input.files[0]; const reader = new FileReader(); reader.onload = (e) => { const lines = e.target.result.split("\n"); const news = []; for(let i=1; i<lines.length; i++) { const c = lines[i].split(","); if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false }); } if(news.length > 0) { activities = news; renderList(); } }; reader.readAsText(file); }
-
-    // 再確認ダイアログを追加
-    function resetAllWithConfirm() { 
-        if(confirm("【最終確認】" + slotNames[currentSlot-1] + " の全チェックをリセットしますか？")) { 
-            activities.forEach(a => a.checked = false); 
-            renderList(); 
-        } 
-    }
-
+    function resetAllWithConfirm() { if(confirm("【最終確認】" + slotNames[currentSlot-1] + " の全チェックをリセットしますか？")) { activities.forEach(a => a.checked = false); renderList(); } }
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
 
     window.onload = () => {
-        document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric', weekday: 'short' });
+        updateTime();
+        setInterval(updateTime, 1000);
         updateSlotUI(); loadData();
     };
 </script>
