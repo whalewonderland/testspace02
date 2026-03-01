@@ -93,7 +93,7 @@
 <body>
 <div class="container">
     <div class="fixed-header">
-        <div class="version-tag">v26.03.01.v3</div>
+        <div class="version-tag">v26.03.01.v4</div>
         <div class="app-title">Todo@Evony</div>
         <div class="slot-bar">
             <button class="slot-btn" id="slotBtn1">Keep1</button>
@@ -111,7 +111,8 @@
         <div class="add-form">
             <select id="daySelector" onchange="checkLock()" style="width:100%; background:#000; color:var(--accent); border:1px solid var(--accent); font-weight:bold; margin-bottom:5px;">
                 <option value="">-- SELECT DAY TO UNLOCK --</option>
-                <option value="mon">MONDAY (泡更新)</option><option value="wed">WEDNESDAY (泡更新)</option><option value="fri">FRIDAY (泡更新)</option><option value="other">OTHER DAYS</option>
+                <option value="mon">MONDAY (泡更新)</option><option value="wed">WEDNESDAY (泡更新)</option><option value="fri">FRIDAY (泡更新)</option>
+                <option value="other">Tue Thu Sat Sun (泡安心？)</option>
             </select>
             <div class="input-row">
                 <input type="text" id="newName" style="flex:2" placeholder="Task Name">
@@ -128,7 +129,7 @@
     </div>
     <div id="mainContent" class="locked">
         <div id="categoryContainers"></div>
-        <button class="btn-reset" onclick="resetAll()">RESET CHECKS</button>
+        <button class="btn-reset" onclick="resetAllWithConfirm()">RESET CHECKS</button>
     </div>
 </div>
  
@@ -183,7 +184,16 @@
         saveData();
     }
 
-    function calculateTotal() { return activities.reduce((sum, t) => (t.checked && t.cat === 'daily' ? sum + (parseInt(t.pts) || 0) : sum), 0); }
+    // 数値計算をより厳密に行うよう修正
+    function calculateTotal() { 
+        return activities.reduce((sum, t) => {
+            if (t.checked && t.cat === 'daily') {
+                return sum + (Number(t.pts) || 0);
+            }
+            return sum;
+        }, 0); 
+    }
+
     function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
     function changeCat(i) { const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
     function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
@@ -198,17 +208,11 @@
             const btn = document.getElementById(`slotBtn${i}`);
             btn.innerText = slotNames[i-1];
             btn.classList.toggle('active', i == currentSlot);
-            
-            // タッチ判定の強化
             let pressTimer;
             btn.onpointerdown = () => { pressTimer = window.setTimeout(() => renameSlot(i), 1000); };
             btn.onpointerup = () => { window.clearTimeout(pressTimer); };
             btn.onpointerleave = () => { window.clearTimeout(pressTimer); };
-            
-            btn.onclick = (e) => { 
-                if (e.detail >= 2) { renameSlot(i); } // ダブルタップ対応
-                else { switchSlot(i); } 
-            };
+            btn.onclick = (e) => { if (e.detail >= 2) { renameSlot(i); } else { switchSlot(i); } };
         }
         localStorage.setItem('currentSlot', currentSlot);
     }
@@ -218,7 +222,15 @@
     function addNewTask() { const n = document.getElementById('newName').value; const p = document.getElementById('newPts').value || 0; if (!n) return; activities.unshift({ name: n, pts: parseInt(p), cat: 'daily', checked: false, note: "" }); document.getElementById('newName').value = ""; document.getElementById('newPts').value = ""; renderList(); }
     function exportCSV() { let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n"; activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${slotNames[currentSlot-1]}_tasks.csv`; link.click(); }
     function importCSV(input) { const file = input.files[0]; const reader = new FileReader(); reader.onload = (e) => { const lines = e.target.result.split("\n"); const news = []; for(let i=1; i<lines.length; i++) { const c = lines[i].split(","); if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false }); } if(news.length > 0) { activities = news; renderList(); } }; reader.readAsText(file); }
-    function resetAll() { if(confirm("Reset checks for " + slotNames[currentSlot-1] + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
+
+    // 再確認ダイアログを追加
+    function resetAllWithConfirm() { 
+        if(confirm("【最終確認】" + slotNames[currentSlot-1] + " の全チェックをリセットしますか？")) { 
+            activities.forEach(a => a.checked = false); 
+            renderList(); 
+        } 
+    }
+
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
 
     window.onload = () => {
