@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+？<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -32,7 +32,6 @@
             touch-action: manipulation;
         }
 
-        /* バージョン表示 */
         .version-tag {
             position: absolute; top: 2px; right: 8px;
             font-size: 8px; color: var(--none); font-family: monospace;
@@ -41,18 +40,15 @@
         .container { max-width: 600px; margin: auto; padding: 0 8px; padding-bottom: 80px; }
         .fixed-header { position: sticky; top: 0; z-index: 1100; background: var(--header-bg); backdrop-filter: blur(10px); padding-top: 12px; border-bottom: 1px solid var(--border); }
         
-        /* アプリ名表示 */
-        .app-title { font-size: 14px; font-weight: 900; color: var(--accent); margin-bottom: 8px; padding-left: 4px; letter-spacing: 0.5px; }
+        .app-title { font-size: 14px; font-weight: 900; color: var(--accent); margin-bottom: 4px; padding-left: 4px; letter-spacing: 0.5px; }
 
-        .slot-bar { display: flex; gap: 3px; margin-bottom: 4px; }
-        .slot-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+        .slot-bar { display: flex; gap: 3px; margin-bottom: 2px; }
+        .slot-btn { flex: 1; padding: 10px 2px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; }
         .slot-btn.active { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); }
+        .slot-hint { font-size: 8px; color: var(--none); text-align: center; margin-bottom: 6px; }
 
         .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); position: relative; overflow: hidden; }
-        
-        /* ポイント進捗バー */
         .progress-line { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--accent); transition: width 0.3s; }
-
         .pts-badge { background: #000; color: var(--accent); border: 2.2px solid var(--accent); padding: 4px 14px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; z-index: 2; }
         .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
@@ -73,13 +69,7 @@
         .cat-long { border-left: 4px solid var(--long); color: var(--long); }
         .cat-none { border-left: 4px solid var(--none); color: var(--note); }
 
-        .task-item { 
-            display: flex; align-items: center; background: var(--card); 
-            padding: 6px 10px; margin-bottom: 5px; border-radius: 10px; 
-            border: 1px solid var(--border); min-height: 48px;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
+        .task-item { display: flex; align-items: center; background: var(--card); padding: 6px 10px; margin-bottom: 5px; border-radius: 10px; border: 1px solid var(--border); min-height: 48px; transition: background 0.3s, border-color 0.3s; }
         .task-item.reward-ready { background: var(--reward-bg); border-color: var(--gold); animation: pulse-gold 2s infinite; }
         .task-item.reward-ready .task-name { color: var(--gold); }
         .task-item.checked { opacity: 0.25; filter: grayscale(1); animation: none; background: var(--card); border-color: var(--border); }
@@ -93,7 +83,6 @@
 
         .order-actions { display: flex; flex-direction: row; gap: 4px; margin-left: 6px; }
         .order-btn { width: 32px; height: 32px; background: #21262d; border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .order-btn:active { background: var(--accent); color: #fff; }
         
         .tool-btn { background: rgba(248, 81, 73, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; padding: 8px; font-size: 14px; margin-left: 6px; cursor: pointer; }
         .btn-reset { width: 100%; padding: 14px; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; margin: 30px 0; font-weight: bold; cursor: pointer; }
@@ -104,15 +93,16 @@
 <body>
 <div class="container">
     <div class="fixed-header">
-        <div class="version-tag">v26.03.01.v1</div>
+        <div class="version-tag">v26.03.01.v2</div>
         <div class="app-title">Todo@Evony</div>
         <div class="slot-bar">
-            <button class="slot-btn" onclick="switchSlot(1)" id="slotBtn1">Keep1</button>
-            <button class="slot-btn" onclick="switchSlot(2)" id="slotBtn2">Keep2</button>
-            <button class="slot-btn" onclick="switchSlot(3)" id="slotBtn3">Keep3</button>
-            <button class="slot-btn" onclick="switchSlot(4)" id="slotBtn4">Keep4</button>
-            <button class="slot-btn" onclick="switchSlot(5)" id="slotBtn5">Keep5</button>
+            <button class="slot-btn" id="slotBtn1">Keep1</button>
+            <button class="slot-btn" id="slotBtn2">Keep2</button>
+            <button class="slot-btn" id="slotBtn3">Keep3</button>
+            <button class="slot-btn" id="slotBtn4">Keep4</button>
+            <button class="slot-btn" id="slotBtn5">Keep5</button>
         </div>
+        <div class="slot-hint">※各アカウント名をダブルタップで編集</div>
         <div class="top-status-bar">
             <div id="dateDisplay" style="font-weight:800; font-size:1.1rem; z-index:2;">---</div>
             <div id="ptsBadge" class="pts-badge">0</div>
@@ -159,33 +149,23 @@
     function renderList() {
         const container = document.getElementById('categoryContainers');
         container.innerHTML = "";
-        
         let total = calculateTotal();
-
         catKeys.forEach(catKey => {
-            const tasksWithIdx = activities
-                .map((task, originalIdx) => ({ task, originalIdx }))
-                .filter(item => item.task.cat === catKey);
-
+            const tasksWithIdx = activities.map((task, originalIdx) => ({ task, originalIdx })).filter(item => item.task.cat === catKey);
             if (tasksWithIdx.length === 0 && catKey !== 'daily' && catKey !== 'none') return;
-
             const section = document.createElement('div');
             section.className = `cat-section ${catStatus[catKey] ? '' : 'closed'}`;
-            
             const header = document.createElement('div');
             header.className = `cat-header cat-${catKey}`;
             header.innerHTML = `<span>${catNames[catKey]}</span><span>${tasksWithIdx.length}</span>`;
             header.onclick = () => { catStatus[catKey] = !catStatus[catKey]; localStorage.setItem('catStatus', JSON.stringify(catStatus)); renderList(); };
-            
             const listDiv = document.createElement('div');
             listDiv.className = 'task-list';
-            
             tasksWithIdx.forEach((item) => {
                 const task = item.task;
                 const originalIdx = item.originalIdx;
                 const match = task.note ? task.note.match(/(\d+)pt満額/) : null;
                 const isFullfilled = match && total >= parseInt(match[1]) && !task.checked;
-
                 const taskDiv = document.createElement('div');
                 taskDiv.className = `task-item ${task.checked ? 'checked' : ''} ${isFullfilled ? 'reward-ready' : ''}`;
                 taskDiv.innerHTML = `<div class="cat-move-btn" onclick="changeCat(${originalIdx})">🔄</div><input type="checkbox" onchange="toggleTask(${originalIdx})" ${task.checked ? 'checked' : ''}><div class="task-info"><div class="task-name">${task.name} <span style="color:var(--accent); font-size:0.7rem;">+${task.pts||0}</span></div><div class="task-note" onclick="editNote(${originalIdx})">${task.note || '+ Note'}</div></div><div class="order-actions"><div class="order-btn" onclick="moveByCat(${originalIdx}, -1, '${task.cat}')">▲</div><div class="order-btn" onclick="moveByCat(${originalIdx}, 1, '${task.cat}')">▼</div></div>${task.cat === 'none' ? `<button class="tool-btn" onclick="deleteTask(${originalIdx})">🗑️</button>` : ''}`;
@@ -195,36 +175,41 @@
             section.appendChild(listDiv);
             container.appendChild(section);
         });
-
         const badge = document.getElementById('ptsBadge');
         badge.innerText = total;
         badge.classList.toggle('reached', total >= 145);
-
-        // プログレスバー更新
         const progWidth = Math.min((total / 145) * 100, 100);
         document.getElementById('progressLine').style.width = progWidth + '%';
-
         saveData();
     }
 
-    function calculateTotal() {
-        return activities.reduce((sum, t) => (t.checked && t.cat === 'daily' ? sum + (parseInt(t.pts) || 0) : sum), 0);
-    }
-
+    function calculateTotal() { return activities.reduce((sum, t) => (t.checked && t.cat === 'daily' ? sum + (parseInt(t.pts) || 0) : sum), 0); }
     function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
     function changeCat(i) { const nextIdx = (catKeys.indexOf(activities[i].cat) + 1) % catKeys.length; activities[i].cat = catKeys[nextIdx]; renderList(); }
     function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
     function deleteTask(i) { if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
     function moveByCat(originalIdx, direction, catKey) { const catItems = activities.filter(t => t.cat === catKey); const itemToMove = activities[originalIdx]; const currentPosInCat = catItems.indexOf(itemToMove); const targetPosInCat = currentPosInCat + direction; if (targetPosInCat < 0 || targetPosInCat >= catItems.length) return; const targetItem = catItems[targetPosInCat]; const targetOriginalIdx = activities.indexOf(targetItem); activities[originalIdx] = targetItem; activities[targetOriginalIdx] = itemToMove; renderList(); }
+    
     function switchSlot(s) { saveData(); currentSlot = s; updateSlotUI(); loadData(); }
-    function renameSlot(s) { const n = prompt("Rename:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
-    function updateSlotUI() { document.querySelectorAll('.slot-btn').forEach((b,i)=>{ b.innerText = slotNames[i]; b.classList.toggle('active', i+1==currentSlot); b.ondblclick = () => renameSlot(i+1); }); localStorage.setItem('currentSlot', currentSlot); }
+    function renameSlot(s) { const n = prompt("New account name:", slotNames[s-1]); if(n) { slotNames[s-1] = n.substring(0,12); localStorage.setItem('slotNames', JSON.stringify(slotNames)); updateSlotUI(); } }
+    
+    function updateSlotUI() {
+        for(let i=1; i<=5; i++) {
+            const btn = document.getElementById(`slotBtn${i}`);
+            btn.innerText = slotNames[i-1];
+            btn.classList.toggle('active', i == currentSlot);
+            btn.onclick = () => switchSlot(i);
+            btn.ondblclick = () => renameSlot(i);
+        }
+        localStorage.setItem('currentSlot', currentSlot);
+    }
+
     function saveData() { localStorage.setItem(`activities_slot${currentSlot}`, JSON.stringify(activities)); }
-    function syncAllSlots() { if(confirm("Copy THIS list to ALL Keep?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
+    function syncAllSlots() { if(confirm("Copy current list to ALL 5 accounts?")) { for(let i=1; i<=5; i++) localStorage.setItem(`activities_slot${i}`, JSON.stringify(activities)); alert("Synced."); } }
     function addNewTask() { const n = document.getElementById('newName').value; const p = document.getElementById('newPts').value || 0; if (!n) return; activities.unshift({ name: n, pts: parseInt(p), cat: 'daily', checked: false, note: "" }); document.getElementById('newName').value = ""; document.getElementById('newPts').value = ""; renderList(); }
     function exportCSV() { let csv = "\uFEFFカテゴリー,名前,ポイント,備考\n"; activities.forEach(a => { csv += `${a.cat},${a.name},${a.pts},${a.note}\n`; }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${slotNames[currentSlot-1]}_tasks.csv`; link.click(); }
     function importCSV(input) { const file = input.files[0]; const reader = new FileReader(); reader.onload = (e) => { const lines = e.target.result.split("\n"); const news = []; for(let i=1; i<lines.length; i++) { const c = lines[i].split(","); if(c.length >= 2) news.push({ cat: c[0].trim(), name: c[1].trim(), pts: parseInt(c[2])||0, note: c[3]?c[3].trim():"", checked: false }); } if(news.length > 0) { activities = news; renderList(); } }; reader.readAsText(file); }
-    function resetAll() { if(confirm("Reset Keep" + currentSlot + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
+    function resetAll() { if(confirm("Reset checks for " + slotNames[currentSlot-1] + "?")) { activities.forEach(a => a.checked = false); renderList(); } }
     function checkLock() { document.getElementById('mainContent').className = document.getElementById('daySelector').value ? "" : "locked"; }
 
     window.onload = () => {
