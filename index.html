@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Master - Fix Edition</title>
+    <title>Game Master - Multi-Reward Edition</title>
     
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
@@ -13,7 +13,14 @@
             --bg: #0b0e14; --card: #161b22; --header-bg: rgba(11, 14, 20, 0.95);
             --accent: #0ea5e9; --success: #10b981; --text: #e6edf3; --note: #8b949e; 
             --daily: #38bdf8; --hazama: #fbbf24; --full: #f43f5e; --long: #a855f7; 
-            --none: #484f58; --danger: #f85149; --border: #30363d;
+            --none: #484f58; --danger: #f85149; --gold: #d29922; --border: #30363d;
+            --reward-bg: rgba(210, 153, 34, 0.25);
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(210, 153, 34, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(210, 153, 34, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(210, 153, 34, 0); }
         }
 
         body { 
@@ -32,11 +39,11 @@
         .slot-btn { flex: 1; padding: 12px 2px; font-size: 10px; font-weight: 800; background: transparent; color: var(--note); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
         .slot-btn.active { background: rgba(14, 165, 233, 0.2); color: var(--accent); border-color: var(--accent); }
 
-        .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .top-status-bar { background: var(--card); display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
         .pts-badge { background: #000; color: var(--accent); border: 2.2px solid var(--accent); padding: 4px 14px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; }
         .pts-badge.reached { background: var(--success); color: #000; border-color: #fff; }
  
-        .add-form { background: var(--card); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .add-form { background: var(--card); padding: 8px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
         .input-row { display: flex; gap: 6px; align-items: center; }
         select, input { padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; background: #0d1117; color: #fff; outline: none; }
         .add-btn { background: var(--accent); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
@@ -44,41 +51,52 @@
         .csv-actions { display: flex; gap: 4px; margin-top: 2px; }
         .csv-btn { background: #21262d; color: var(--text); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 10px; flex: 1; cursor: pointer; }
 
-        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 12px 14px; border-radius: 10px; margin: 12px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); }
+        .cat-header { font-size: 0.85rem; font-weight: 800; padding: 10px 14px; border-radius: 10px; margin: 10px 0 6px; display: flex; justify-content: space-between; cursor: pointer; background: rgba(255,255,255,0.03); }
         .cat-section.closed .task-list { display: none; }
         
         .cat-daily { border-left: 4px solid var(--daily); color: var(--daily); }
         .cat-hazama { border-left: 4px solid var(--hazama); color: var(--hazama); }
         .cat-full { border-left: 4px solid var(--full); color: var(--full); }
+        .cat-long { border-left: 4px solid var(--long); color: var(--long); }
         .cat-none { border-left: 4px solid var(--none); color: var(--note); }
 
         .task-item { 
             display: flex; align-items: center; background: var(--card); 
-            padding: 8px 10px; margin-bottom: 6px; border-radius: 12px; 
-            border: 1px solid var(--border); min-height: 50px;
+            padding: 6px 10px; margin-bottom: 5px; border-radius: 10px; 
+            border: 1px solid var(--border); min-height: 48px;
+            transition: background 0.3s, border-color 0.3s;
         }
-        .task-item.checked { opacity: 0.25; filter: grayscale(1); }
+
+        /* 満額達成時の特別スタイル */
+        .task-item.reward-ready {
+            background: var(--reward-bg);
+            border-color: var(--gold);
+            animation: pulse-gold 2s infinite;
+        }
+        .task-item.reward-ready .task-name { color: var(--gold); }
+
+        .task-item.checked { opacity: 0.25; filter: grayscale(1); animation: none; background: var(--card); border-color: var(--border); }
         
-        .cat-move-btn { width: 40px; height: 40px; margin-right: 10px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 10px; font-size: 18px; color: var(--accent); flex-shrink: 0; cursor: pointer; }
+        .cat-move-btn { width: 38px; height: 38px; margin-right: 10px; display: flex; align-items: center; justify-content: center; background: #21262d; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; color: var(--accent); flex-shrink: 0; cursor: pointer; }
         input[type="checkbox"] { width: 26px; height: 26px; margin-right: 10px; flex-shrink: 0; cursor: pointer; }
         
-        .task-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: 2px 0; } 
-        .task-name { font-weight: 700; font-size: 0.9rem; color: #fff; line-height: 1.2; }
+        .task-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; } 
+        .task-name { font-weight: 700; font-size: 0.85rem; color: #fff; line-height: 1.2; }
         
         .task-note { 
-            font-size: 0.75rem; color: var(--note); margin-top: 4px; 
-            background: rgba(255,255,255,0.08); padding: 4px 8px; 
-            border-radius: 6px; display: block; 
+            font-size: 0.7rem; color: var(--note); margin-top: 3px; 
+            background: rgba(255,255,255,0.08); padding: 3px 8px; 
+            border-radius: 4px; display: block; width: fit-content;
             word-wrap: break-word; overflow-wrap: break-word;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .order-actions { display: flex; flex-direction: row; gap: 4px; margin-left: 6px; }
         .order-btn { 
-            width: 34px; height: 34px; background: #21262d; border: 1px solid var(--border); 
-            color: var(--text); border-radius: 6px; font-size: 12px; 
+            width: 32px; height: 32px; background: #21262d; border: 1px solid var(--border); 
+            color: var(--text); border-radius: 6px; font-size: 11px; 
             display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; touch-action: manipulation;
+            cursor: pointer;
         }
         .order-btn:active { background: var(--accent); color: #fff; }
         
@@ -144,10 +162,9 @@
     function renderList() {
         const container = document.getElementById('categoryContainers');
         container.innerHTML = "";
-        let total = 0;
+        let total = calculateTotal();
 
         catKeys.forEach(catKey => {
-            // カテゴリに属するタスクを取得（インデックスも保持）
             const tasksWithIdx = activities
                 .map((task, originalIdx) => ({ task, originalIdx }))
                 .filter(item => item.task.cat === catKey);
@@ -165,14 +182,18 @@
             const listDiv = document.createElement('div');
             listDiv.className = 'task-list';
             
-            tasksWithIdx.forEach((item, displayIdx) => {
+            tasksWithIdx.forEach((item) => {
                 const task = item.task;
                 const originalIdx = item.originalIdx;
+                
+                // 満額判定ロジック
+                const match = task.note ? task.note.match(/(\d+)pt満額/) : null;
+                const isFullfilled = match && total >= parseInt(match[1]) && !task.checked;
 
                 if (task.checked && catKey === 'daily') total += (parseInt(task.pts) || 0);
                 
                 const taskDiv = document.createElement('div');
-                taskDiv.className = `task-item ${task.checked ? 'checked' : ''}`;
+                taskDiv.className = `task-item ${task.checked ? 'checked' : ''} ${isFullfilled ? 'reward-ready' : ''}`;
                 
                 taskDiv.innerHTML = `
                     <div class="cat-move-btn" onclick="changeCat(${originalIdx})">🔄</div>
@@ -182,10 +203,10 @@
                         <div class="task-note" onclick="editNote(${originalIdx})">${task.note || '+ Note'}</div>
                     </div>
                     <div class="order-actions">
-                        <div class="order-btn" onclick="moveByCat(${originalIdx}, -1, '${catKey}')">▲</div>
-                        <div class="order-btn" onclick="moveByCat(${originalIdx}, 1, '${catKey}')">▼</div>
+                        <div class="order-btn" onclick="moveByCat(${originalIdx}, -1, '${task.cat}')">▲</div>
+                        <div class="order-btn" onclick="moveByCat(${originalIdx}, 1, '${task.cat}')">▼</div>
                     </div>
-                    ${catKey === 'none' ? `<button class="tool-btn" onclick="deleteTask(${originalIdx})">🗑️</button>` : ''}
+                    ${task.cat === 'none' ? `<button class="tool-btn" onclick="deleteTask(${originalIdx})">🗑️</button>` : ''}
                 `;
                 listDiv.appendChild(taskDiv);
             });
@@ -193,9 +214,15 @@
             section.appendChild(listDiv);
             container.appendChild(section);
         });
-        document.getElementById('ptsBadge').innerText = total;
-        document.getElementById('ptsBadge').classList.toggle('reached', total >= 145);
+
+        const badge = document.getElementById('ptsBadge');
+        badge.innerText = total;
+        badge.classList.toggle('reached', total >= 145);
         saveData();
+    }
+
+    function calculateTotal() {
+        return activities.reduce((sum, t) => (t.checked && t.cat === 'daily' ? sum + (parseInt(t.pts) || 0) : sum), 0);
     }
 
     function toggleTask(i) { activities[i].checked = !activities[i].checked; renderList(); }
@@ -203,24 +230,16 @@
     function editNote(i) { const n = prompt("Note:", activities[i].note); if (n !== null) { activities[i].note = n; renderList(); } }
     function deleteTask(i) { if (confirm("Delete?")) { activities.splice(i, 1); renderList(); } }
     
-    // カテゴリ内での移動を確実にする新しいロジック
     function moveByCat(originalIdx, direction, catKey) {
-        // カテゴリ内のアイテムだけを抽出
         const catItems = activities.filter(t => t.cat === catKey);
         const itemToMove = activities[originalIdx];
         const currentPosInCat = catItems.indexOf(itemToMove);
         const targetPosInCat = currentPosInCat + direction;
-
         if (targetPosInCat < 0 || targetPosInCat >= catItems.length) return;
-
-        // ターゲットとなるアイテムを見つける
         const targetItem = catItems[targetPosInCat];
         const targetOriginalIdx = activities.indexOf(targetItem);
-
-        // 配列内での位置を入れ替え
         activities[originalIdx] = targetItem;
         activities[targetOriginalIdx] = itemToMove;
-        
         renderList();
     }
 
